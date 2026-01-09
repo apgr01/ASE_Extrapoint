@@ -16,6 +16,8 @@ int lines_cleared_total = 0;
 volatile int highScore = 0; 
 
 volatile int hard_drop_mode = 0; 
+volatile int restart_requested = 0;
+
 
 // --- Variabili Esterne dal RIT (Joystick) ---
 extern volatile int J_left;
@@ -236,7 +238,8 @@ void on_key1_pressed(void) {
 
     // 1. Se GAME OVER -> Ricomincia partita
     if (status == GAME_OVER) {
-        game_init();
+        // NON richiamare game_init() qui dentro (siamo in RIT IRQ)
+        restart_requested = 1;   // segnalo alla logica di gioco che deve riavviare
         return;
     }
     
@@ -346,6 +349,16 @@ static int ticks = 0;
 
 void game_update(void) {
     Block temp;
+	
+	    // Gestione restart richiesto
+    if (restart_requested) {
+        restart_requested = 0;
+        // Se vuoi disabilitare temporaneamente RIT mentre reinizializzi:
+        // NVIC_DisableIRQ(RIT_IRQn);
+        game_init();
+        // NVIC_EnableIRQ(RIT_IRQn);
+        return;
+    }
     
     // Se non è RUNNING, non fare nulla (Pausa o Game Over)
     if (status != GAME_RUNNING) return;
