@@ -11,6 +11,7 @@
 #include "timer.h"
 #include "../led/led.h"
 #include "../utils.h"
+#include "../game.h"
 
 /******************************************************************************
 ** Function name:		Timer0_IRQHandler
@@ -27,6 +28,8 @@ void TIMER0_IRQHandler (void)
 	if(LPC_TIM0->IR & 1) 			 // MR0
 	{ 
 		// your code
+		// Esegui la logica di gioco
+        game_update();
 		LPC_TIM0->IR = 1;				 //clear interrupt flag
 	}
 	else if(LPC_TIM0->IR & 2){ // MR1
