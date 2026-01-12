@@ -3,11 +3,11 @@
 <title>Static Call Graph - [.\Objects\sample_JOYSTICK.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\sample_JOYSTICK.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Fri Jan  9 21:19:00 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Sat Jan 10 17:52:22 2026
 <BR><P>
-<H3>Maximum Stack Usage =        512 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        472 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-TIMER0_IRQHandler &rArr; game_update &rArr; lock_block &rArr; spawn_block &rArr; draw_block_in_preview &rArr; LCD_SetPoint
+TIMER0_IRQHandler &rArr; game_update &rArr; lock_block &rArr; check_lines &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
 <P>
 <H3>
 Functions with no stack information
@@ -221,8 +221,8 @@ Global Symbols
 <P><STRONG><a name="[90]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[3c]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
-<BR><BR>[Stack]<UL><LI>Max Depth = 208 + Unknown Stack Size
-<LI>Call Chain = __rt_entry_main &rArr; main &rArr; game_init &rArr; spawn_block &rArr; draw_block_in_preview &rArr; LCD_SetPoint
+<BR><BR>[Stack]<UL><LI>Max Depth = 176 + Unknown Stack Size
+<LI>Call Chain = __rt_entry_main &rArr; main &rArr; game_init &rArr; draw_board &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
 <LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -404,8 +404,8 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[3d]"></a>main</STRONG> (Thumb, 92 bytes, Stack size 8 bytes, sample.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 208 + Unknown Stack Size
-<LI>Call Chain = main &rArr; game_init &rArr; spawn_block &rArr; draw_block_in_preview &rArr; LCD_SetPoint
+<BR><BR>[Stack]<UL><LI>Max Depth = 176 + Unknown Stack Size
+<LI>Call Chain = main &rArr; game_init &rArr; draw_board &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_init
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enable_timer
@@ -450,7 +450,7 @@ Global Symbols
 
 <P><STRONG><a name="[9a]"></a>__semihosting_library_function</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, indicate_semi.o(.text), UNUSED)
 
-<P><STRONG><a name="[4d]"></a>draw_grid_cell</STRONG> (Thumb, 72 bytes, Stack size 32 bytes, game.o(.text), UNUSED)
+<P><STRONG><a name="[4d]"></a>draw_grid_cell</STRONG> (Thumb, 76 bytes, Stack size 32 bytes, game.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
 </UL>
 
@@ -460,13 +460,11 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_update
-<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rotate_block
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
 </UL>
 
-<P><STRONG><a name="[50]"></a>draw_board_static</STRONG> (Thumb, 316 bytes, Stack size 40 bytes, game.o(.text))
+<P><STRONG><a name="[50]"></a>draw_board</STRONG> (Thumb, 316 bytes, Stack size 40 bytes, game.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160 + Unknown Stack Size
-<LI>Call Chain = draw_board_static &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
+<LI>Call Chain = draw_board &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Text
@@ -476,90 +474,87 @@ Global Symbols
 <LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_init
 </UL>
 
-<P><STRONG><a name="[53]"></a>draw_block_in_preview</STRONG> (Thumb, 134 bytes, Stack size 88 bytes, game.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = draw_block_in_preview &rArr; LCD_SetPoint
-</UL>
-<BR>[Calls]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
-</UL>
-<BR>[Called By]<UL><LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spawn_block
+<P><STRONG><a name="[53]"></a>draw_block_preview</STRONG> (Thumb, 138 bytes, Stack size 88 bytes, game.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
 </UL>
 
 <P><STRONG><a name="[9b]"></a>check_collision</STRONG> (Thumb, 126 bytes, Stack size 76 bytes, game.o(.text), UNUSED)
 
-<P><STRONG><a name="[54]"></a>check_lines</STRONG> (Thumb, 344 bytes, Stack size 64 bytes, game.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 184 + Unknown Stack Size
+<P><STRONG><a name="[54]"></a>check_lines</STRONG> (Thumb, 344 bytes, Stack size 56 bytes, game.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 176 + Unknown Stack Size
 <LI>Call Chain = check_lines &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Text
 <LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
 </UL>
-<BR>[Called By]<UL><LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
+<BR>[Called By]<UL><LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
 </UL>
 
-<P><STRONG><a name="[55]"></a>spawn_block</STRONG> (Thumb, 338 bytes, Stack size 72 bytes, game.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 192<LI>Call Chain = spawn_block &rArr; draw_block_in_preview &rArr; LCD_SetPoint
+<P><STRONG><a name="[55]"></a>spawn_block</STRONG> (Thumb, 502 bytes, Stack size 88 bytes, game.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = spawn_block &rArr; LCD_SetPoint
 </UL>
 <BR>[Calls]<UL><LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rand
-<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_block_in_preview
+<LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_update
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
 <LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_init
 </UL>
 
-<P><STRONG><a name="[57]"></a>on_key1_pressed</STRONG> (Thumb, 116 bytes, Stack size 16 bytes, game.o(.text))
+<P><STRONG><a name="[57]"></a>lock_block</STRONG> (Thumb, 560 bytes, Stack size 120 bytes, game.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 296 + Unknown Stack Size
+<LI>Call Chain = lock_block &rArr; check_lines &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spawn_block
+<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;check_lines
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Text
+<LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
+</UL>
+<BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_update
+</UL>
+
+<P><STRONG><a name="[58]"></a>rotate_block</STRONG> (Thumb, 590 bytes, Stack size 144 bytes, game.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = rotate_block &rArr; LCD_SetPoint
+</UL>
+<BR>[Calls]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
+</UL>
+<BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_update
+</UL>
+
+<P><STRONG><a name="[59]"></a>on_key1_pressed</STRONG> (Thumb, 112 bytes, Stack size 16 bytes, game.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = on_key1_pressed &rArr; GUI_Text &rArr; LCD_SetPoint
 </UL>
-<BR>[Calls]<UL><LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srand
+<BR>[Calls]<UL><LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srand
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Text
 </UL>
 <BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RIT_IRQHandler
 </UL>
 
 <P><STRONG><a name="[4c]"></a>game_init</STRONG> (Thumb, 110 bytes, Stack size 8 bytes, game.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 200 + Unknown Stack Size
-<LI>Call Chain = game_init &rArr; spawn_block &rArr; draw_block_in_preview &rArr; LCD_SetPoint
+<BR><BR>[Stack]<UL><LI>Max Depth = 168 + Unknown Stack Size
+<LI>Call Chain = game_init &rArr; draw_board &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<BR>[Calls]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 <LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spawn_block
-<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_board_static
+<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_board
 <LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Clear
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[5a]"></a>lock_block</STRONG> (Thumb, 444 bytes, Stack size 152 bytes, game.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 344 + Unknown Stack Size
-<LI>Call Chain = lock_block &rArr; spawn_block &rArr; draw_block_in_preview &rArr; LCD_SetPoint
+<P><STRONG><a name="[5c]"></a>game_update</STRONG> (Thumb, 1534 bytes, Stack size 168 bytes, game.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 464 + Unknown Stack Size
+<LI>Call Chain = game_update &rArr; lock_block &rArr; check_lines &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
+<BR>[Calls]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rotate_block
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
 <LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spawn_block
-<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;check_lines
-<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Text
+<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_board
 <LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_tetromino
-</UL>
-<BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_update
-</UL>
-
-<P><STRONG><a name="[5b]"></a>rotate_block</STRONG> (Thumb, 348 bytes, Stack size 168 bytes, game.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 288<LI>Call Chain = rotate_block &rArr; draw_tetromino &rArr; LCD_SetPoint
-</UL>
-<BR>[Calls]<UL><LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_tetromino
-</UL>
-<BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_update
-</UL>
-
-<P><STRONG><a name="[5c]"></a>game_update</STRONG> (Thumb, 1326 bytes, Stack size 160 bytes, game.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 504 + Unknown Stack Size
-<LI>Call Chain = game_update &rArr; lock_block &rArr; spawn_block &rArr; draw_block_in_preview &rArr; LCD_SetPoint
-</UL>
-<BR>[Calls]<UL><LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
-<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rotate_block
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
-<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spawn_block
-<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_board_static
-<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_tetromino
+<LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
 <LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Clear
 </UL>
 <BR>[Called By]<UL><LI><a href="#[b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIMER0_IRQHandler
@@ -578,10 +573,10 @@ Global Symbols
 <P><STRONG><a name="[1e]"></a>EINT2_IRQHandler</STRONG> (Thumb, 68 bytes, Stack size 0 bytes, irq_button.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_lpc17xx.o(RESET)
 </UL>
-<P><STRONG><a name="[27]"></a>RIT_IRQHandler</STRONG> (Thumb, 404 bytes, Stack size 8 bytes, irq_rit.o(.text))
+<P><STRONG><a name="[27]"></a>RIT_IRQHandler</STRONG> (Thumb, 380 bytes, Stack size 8 bytes, irq_rit.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = RIT_IRQHandler &rArr; on_key1_pressed &rArr; GUI_Text &rArr; LCD_SetPoint
 </UL>
-<BR>[Calls]<UL><LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_key1_pressed
+<BR>[Calls]<UL><LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_key1_pressed
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_lpc17xx.o(RESET)
 </UL>
@@ -604,8 +599,8 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[b]"></a>TIMER0_IRQHandler</STRONG> (Thumb, 62 bytes, Stack size 8 bytes, irq_timer.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 512 + Unknown Stack Size
-<LI>Call Chain = TIMER0_IRQHandler &rArr; game_update &rArr; lock_block &rArr; spawn_block &rArr; draw_block_in_preview &rArr; LCD_SetPoint
+<BR><BR>[Stack]<UL><LI>Max Depth = 472 + Unknown Stack Size
+<LI>Call Chain = TIMER0_IRQHandler &rArr; game_update &rArr; lock_block &rArr; check_lines &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_update
 </UL>
@@ -675,10 +670,14 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PutChar
 <LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DrawLine
+<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_update
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rotate_block
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spawn_block
 <LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;check_lines
-<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_block_in_preview
+<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_block_preview
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Text
-<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_board_static
+<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_board
 <LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_tetromino
 <LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_grid_cell
 </UL>
@@ -698,10 +697,10 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetASCIICode
 <LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
 </UL>
-<BR>[Called By]<UL><LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
-<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_key1_pressed
+<BR>[Called By]<UL><LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_key1_pressed
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
 <LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;check_lines
-<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_board_static
+<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_board
 </UL>
 
 <P><STRONG><a name="[52]"></a>__2sprintf</STRONG> (Thumb, 34 bytes, Stack size 32 bytes, noretval__2sprintf.o(.text))
@@ -711,9 +710,9 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_sputc
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char_common
 </UL>
-<BR>[Called By]<UL><LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
+<BR>[Called By]<UL><LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lock_block
 <LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;check_lines
-<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_board_static
+<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_board
 </UL>
 
 <P><STRONG><a name="[64]"></a>__printf</STRONG> (Thumb, 104 bytes, Stack size 24 bytes, __printf.o(.text))
@@ -733,22 +732,22 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_d
 </UL>
 
-<P><STRONG><a name="[58]"></a>srand</STRONG> (Thumb, 42 bytes, Stack size 8 bytes, rand.o(.text))
+<P><STRONG><a name="[5a]"></a>srand</STRONG> (Thumb, 42 bytes, Stack size 8 bytes, rand.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = srand
 </UL>
 <BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_rand_init
-<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_key1_pressed
+<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_key1_pressed
 </UL>
 
 <P><STRONG><a name="[37]"></a>_rand_init</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, rand.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _rand_init &rArr; srand
 </UL>
-<BR>[Calls]<UL><LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srand
+<BR>[Calls]<UL><LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srand
 </UL>
 <BR>[Called By]<UL><LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_init_rand_2
 </UL>
 
-<P><STRONG><a name="[59]"></a>__aeabi_memclr4</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rt_memclr_w.o(.text))
+<P><STRONG><a name="[5b]"></a>__aeabi_memclr4</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rt_memclr_w.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_update
 <LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_init
 </UL>

@@ -1792,73 +1792,57 @@ void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor);
 # 6 "Source\\game.h" 2
-
-// --- Dimensioni e Costanti di Gioco ---
-
-
-
-
-
-
-
-// Calcolo offset per centrare la griglia o metterla a sinistra
-// Esempio: Margine sinistro di 5 pixel, Margine alto di 10 pixel
-
-
-
-// Stati del Gioco
+# 24 "Source\\game.h"
 typedef enum {
     GAME_OVER,
     GAME_RUNNING,
     GAME_PAUSED
 } GameStatus;
 
-// Tipi di Tetramini (I, J, L, O, S, T, Z)
+
 typedef enum {
-    I_BLOCK, J_BLOCK, L_BLOCK, O_BLOCK, S_BLOCK, T_BLOCK, Z_BLOCK
+    I_BLOCK,
+    J_BLOCK,
+    L_BLOCK,
+    O_BLOCK,
+    S_BLOCK,
+    T_BLOCK,
+    Z_BLOCK
 } BlockType;
-
-// --- Colori Tetris (Formato RGB565) ---
-// Formato: 5 bit Rosso, 6 bit Verde, 5 bit Blu
-// I nomi iniziano con T_ per distinguerli da quelli di sistema
-# 44 "Source\\game.h"
-// Colori di utilità
-
-
-
-
-
-// --- Strutture Dati ---
-
-// Un punto nella griglia (coordinate riga, colonna)
+# 59 "Source\\game.h"
 typedef struct {
     int row;
     int col;
 } Point;
 
-// Definizione di un blocco (Tetramino)
 typedef struct {
-    Point cells[4]; // Ogni blocco è formato da 4 celle
-    Point position; // Posizione (riga, colonna) del centro/pivot del blocco nella griglia
-    uint16_t color; // Colore del blocco (usiamo i colori definiti in GLCD.h)
-    BlockType type; // Tipo di blocco
-    int rotation; // Stato di rotazione (0, 1, 2, 3)
+    Point cells[4]; // celle che compongono il blocco
+    Point position; // posizione nella griglia
+    uint16_t color;
+    BlockType type;
+    int rotation;
 } Block;
 
-// Variabili Globali Esterne (accessibili da main e interrupt)
-extern uint16_t board[20 // Righe della griglia di gioco][10 // Colonne della griglia di gioco]; // Matrice che rappresenta la griglia (contiene i colori)
-extern Block currentBlock; // Il blocco che sta cadendo
-extern Block nextBlock; // Il prossimo blocco (per la preview)
-extern volatile GameStatus status; // Stato corrente del gioco
-extern int score; // Punteggio corrente
 
-// --- Prototipi di Funzione ---
-void game_init(void); // Inizializza variabili e schermo
-void game_update(void); // Logica principale (chiamata dal timer)
-void spawn_block(void); // Genera un nuovo blocco
-void draw_board_static(void); // Disegna i contorni statici
+
+
+extern uint16_t board[20][10];
+extern Block currentBlock;
+extern Block nextBlock;
+
+extern volatile GameStatus status;
 extern volatile int hard_drop_mode;
-extern void on_key1_pressed(void);
+
+extern int score;
+
+
+
+
+void game_init(void);
+void game_update(void);
+void spawn_block(void);
+void draw_board_static(void);
+void on_key1_pressed(void);
 # 2 "Source/game.c" 2
 
 # 1 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 1 3
@@ -2347,415 +2331,293 @@ extern __attribute__((__nothrow__)) int _fisatty(FILE * ) __attribute__((__nonnu
 extern __attribute__((__nothrow__)) void __use_no_semihosting_swi(void);
 extern __attribute__((__nothrow__)) void __use_no_semihosting(void);
 # 5 "Source/game.c" 2
-
-// --- Variabili Globali ---
-uint16_t board[20 // Righe della griglia di gioco][10 // Colonne della griglia di gioco];
-Block currentBlock;
-Block nextBlock;
-
-// Inizializziamo a PAUSED così il gioco non parte da solo
+# 16 "Source/game.c"
+uint16_t board[20][10];
+Block currentBlock, nextBlock;
 volatile GameStatus status = GAME_PAUSED;
 
 int score = 0;
 int lines_cleared_total = 0;
 volatile int highScore = 0;
 
+
 volatile int hard_drop_mode = 0;
 volatile int restart_requested = 0;
+static int drop_ticks = 0;
 
 
-// --- Variabili Esterne dal RIT (Joystick) ---
-extern volatile int J_left;
-extern volatile int J_right;
-extern volatile int J_up;
-extern volatile int J_down;
+extern volatile int J_left, J_right, J_up, J_down;
 
-// Forme dei blocchi
+
 const Point TETROMINO_SHAPES[7][4] = {
-    {{0, -1}, {0, 0}, {0, 1}, {0, 2}}, // I
-    {{0, -1}, {0, 0}, {0, 1}, {1, 1}}, // J
-    {{0, -1}, {0, 0}, {0, 1}, {1, -1}}, // L
-    {{0, 0}, {0, 1}, {1, 0}, {1, 1}}, // O
-    {{0, -1}, {0, 0}, {1, 0}, {1, 1}}, // S
-    {{0, -1}, {0, 0}, {0, 1}, {1, 0}}, // T
-    {{0, 1}, {0, 0}, {1, 0}, {1, -1}} // Z
+    {{0, -1}, {0, 0}, {0, 1}, {0, 2}},
+    {{0, -1}, {0, 0}, {0, 1}, {1, 1}},
+    {{0, -1}, {0, 0}, {0, 1}, {1, -1}},
+    {{0, 0}, {0, 1}, {1, 0}, {1, 1}},
+    {{0, -1}, {0, 0}, {1, 0}, {1, 1}},
+    {{0, -1}, {0, 0}, {0, 1}, {1, 0}},
+    {{0, 1}, {0, 0}, {1, 0}, {1, -1}}
 };
 
 const uint16_t TETROMINO_COLORS[7] = {
-    0x07FF // Ciano (I piece) - R=0, G=63, B=31 (Nota: 0x7FFF è ciano chiaro, 0x07FF è puro ciano standard), 0x001F // Blu (J piece) - R=0, G=0, B=31, 0xFD20 // Arancione (L piece) - R=31, G=40, B=0, 0xFFE0 // Giallo (O piece) - R=31, G=63, B=0, 0x07E0 // Verde (S piece) - R=0, G=63, B=0, 0xF81F // 0xF81F (T piece) - R=31, G=0, B=31, 0xF800 // Rosso (Z piece) - R=31, G=0, B=0
+    0x07FF, 0x001F, 0xFD20, 0xFFE0, 0x07E0, 0xF81F, 0xF800
 };
 
-// --- Funzioni di Disegno (Low Level) ---
+
+
+static void update_label(int y, int value, uint16_t color) {
+    char buf[12];
+    sprintf(buf, "%d", value);
+    GUI_Text(160, y, (uint8_t *)buf, color, 0x0000);
+}
 
 void draw_grid_cell(int row, int col, uint16_t color) {
-    int x0 = 5 + (col * 15 // Dimensione in pixel di ogni blocco (quadrato));
-    int y0 = 10 + (row * 15 // Dimensione in pixel di ogni blocco (quadrato));
     int i, j;
+    int x0 = 5 + (col * 15);
+    int y0 = 10 + (row * 15);
 
-    for (i = 0; i < 15 // Dimensione in pixel di ogni blocco (quadrato); i++) {
-        for (j = 0; j < 15 // Dimensione in pixel di ogni blocco (quadrato); j++) {
-            if (i == 15 // Dimensione in pixel di ogni blocco (quadrato) - 1 || j == 15 // Dimensione in pixel di ogni blocco (quadrato) - 1)
-                LCD_SetPoint(x0 + j, y0 + i, 0x0000 // Sfondo);
-            else
-                LCD_SetPoint(x0 + j, y0 + i, color);
+    for (i = 0; i < 15; i++) {
+        for (j = 0; j < 15; j++) {
+            uint16_t p_color = (i == 15 - 1 || j == 15 - 1) ? 0x0000 : color;
+            LCD_SetPoint(x0 + j, y0 + i, p_color);
         }
     }
 }
 
 void draw_tetromino(Block block, uint16_t color) {
-    int i;
-    for(i = 0; i < 4; i++) {
-        int r = block.position.row + block.cells[i].row;
-        int c = block.position.col + block.cells[i].col;
-
-        if(r >= 0 && r < 20 // Righe della griglia di gioco && c >= 0 && c < 10 // Colonne della griglia di gioco) {
+    int i, r, c;
+    for (i = 0; i < 4; i++) {
+        r = block.position.row + block.cells[i].row;
+        c = block.position.col + block.cells[i].col;
+        if (r >= 0 && r < 20 && c >= 0 && c < 10) {
             draw_grid_cell(r, c, color);
         }
     }
 }
 
-void draw_board_static(void) {
+void draw_board(void) {
     int i;
-    char str[15];
-    int x_start = 5 - 1;
-    int y_start = 10 - 1;
-    int width_px = 10 // Colonne della griglia di gioco * 15 // Dimensione in pixel di ogni blocco (quadrato) + 2;
-    int height_px = 20 // Righe della griglia di gioco * 15 // Dimensione in pixel di ogni blocco (quadrato) + 2;
+    int w = 10 * 15 + 2;
+    int h = 20 * 15 + 2;
+    int x = 5 - 1;
+    int y = 10 - 1;
 
-    // Cornice
-    for(i = 0; i < width_px; i++) {
-        LCD_SetPoint(x_start + i, y_start, 0xFFFF);
-        LCD_SetPoint(x_start + i, y_start + height_px, 0xFFFF);
+    for (i = 0; i < w; i++) {
+        LCD_SetPoint(x + i, y, 0xFFFF);
+        LCD_SetPoint(x + i, y + h, 0xFFFF);
     }
-    for(i = 0; i < height_px; i++) {
-        LCD_SetPoint(x_start, y_start + i, 0xFFFF);
-        LCD_SetPoint(x_start + width_px, y_start + i, 0xFFFF);
+    for (i = 0; i < h; i++) {
+        LCD_SetPoint(x, y + i, 0xFFFF);
+        LCD_SetPoint(x + w, y + i, 0xFFFF);
     }
 
-    // --- INTERFACCIA LATERALE ---
+    GUI_Text(160, 20, (uint8_t *)"SCORE", 0xFFFF, 0x0000);
+    GUI_Text(160, 70, (uint8_t *)"LINES", 0xFFFF, 0x0000);
+    GUI_Text(160, 120, (uint8_t *)"HI-SCORE", 0xFFFF, 0x0000);
+    GUI_Text(160, 170, (uint8_t *)"NEXT", 0xFFFF, 0x0000);
 
-    // Score
-    GUI_Text(160, 20, (uint8_t *) "SCORE", 0xFFFF, 0x0000);
-    sprintf(str, "%d", score);
-    GUI_Text(160, 40, (uint8_t *)str, 0xFFFF, 0x0000);
+    update_label(40, score, 0xFFFF);
+    update_label(90, lines_cleared_total, 0xFFFF);
+    update_label(140, highScore, 0xFFE0);
 
-    // Lines
-    GUI_Text(160, 70, (uint8_t *) "LINES", 0xFFFF, 0x0000);
-    sprintf(str, "%d", lines_cleared_total);
-    GUI_Text(160, 90, (uint8_t *)str, 0xFFFF, 0x0000);
-
-    // High Score
-    GUI_Text(160, 120, (uint8_t *) "HI-SCORE", 0xFFFF, 0x0000);
-    sprintf(str, "%d", highScore);
-    GUI_Text(160, 140, (uint8_t *)str, 0xFFE0, 0x0000);
-
-    // Next
-    GUI_Text(160, 170, (uint8_t *) "NEXT", 0xFFFF, 0x0000);
-
-    // Status Text (Se siamo in pausa all'inizio) -> SPOSTATO A 265
     if (status == GAME_PAUSED) {
-        GUI_Text(160, 265, (uint8_t *) "PAUSED", 0xFFE0, 0x0000);
+        GUI_Text(160, 265, (uint8_t *)"PAUSED", 0xFFE0, 0x0000);
     }
 }
 
-// --- Funzione Anteprima ---
-void draw_block_in_preview(Block blk, uint16_t color) {
-    int start_x = 160;
-    int start_y = 190; // Il blocco viene disegnato da qui in giù (finisce circa a 250)
-    int i, a, b;
+void draw_block_preview(Block blok, uint16_t color) {
+    int i, a, b, px, py;
+    int start_x = 160, start_y = 190;
 
-    for(i = 0; i < 4; i++) {
-        int r = blk.cells[i].row + 1;
-        int c = blk.cells[i].col + 1;
-        int px = start_x + (c * 15 // Dimensione in pixel di ogni blocco (quadrato));
-        int py = start_y + (r * 15 // Dimensione in pixel di ogni blocco (quadrato));
-
-        for (a = 0; a < 15 // Dimensione in pixel di ogni blocco (quadrato); a++) {
-            for (b = 0; b < 15 // Dimensione in pixel di ogni blocco (quadrato); b++) {
-                if (a == 15 // Dimensione in pixel di ogni blocco (quadrato) - 1 || b == 15 // Dimensione in pixel di ogni blocco (quadrato) - 1)
-                    LCD_SetPoint(px + b, py + a, 0x0000 // Sfondo);
-                else
-                    LCD_SetPoint(px + b, py + a, color);
+    for (i = 0; i < 4; i++) {
+        px = start_x + ((blok.cells[i].col + 1) * 15);
+        py = start_y + ((blok.cells[i].row + 1) * 15);
+        for (a = 0; a < 15; a++) {
+            for (b = 0; b < 15; b++) {
+                uint16_t p_color = (a == 15 - 1 || b == 15 - 1) ? 0x0000 : color;
+                LCD_SetPoint(px + b, py + a, p_color);
             }
         }
     }
 }
 
-// --- Logica di Gioco ---
+
 
 int check_collision(Block b) {
-    int i;
-    for(i = 0; i < 4; i++) {
-        int r = b.position.row + b.cells[i].row;
-        int c = b.position.col + b.cells[i].col;
-
-        if (r >= 20 // Righe della griglia di gioco) return 1;
-        if (c < 0 || c >= 10 // Colonne della griglia di gioco) return 1;
-        if (r >= 0 && board[r][c] != 0x0000 // Sfondo) return 1;
+    int i, r, c;
+    for (i = 0; i < 4; i++) {
+        r = b.position.row + b.cells[i].row;
+        c = b.position.col + b.cells[i].col;
+        if (r >= 20 || c < 0 || c >= 10) return 1;
+        if (r >= 0 && board[r][c] != 0x0000) return 1;
     }
     return 0;
 }
 
 void check_lines(void) {
-    int row, col, k;
-    int lines_cleared = 0;
-    char str[15];
+    int r, c, k, full, lines_found = 0;
 
-    for(row = 20 // Righe della griglia di gioco - 1; row >= 0; row--) {
-        int full = 1;
-        for(col = 0; col < 10 // Colonne della griglia di gioco; col++) {
-            if(board[row][col] == 0x0000 // Sfondo) {
-                full = 0; break;
-            }
+    for (r = 20 - 1; r >= 0; r--) {
+        full = 1;
+        for (c = 0; c < 10; c++) {
+            if (board[r][c] == 0x0000) { full = 0; break; }
         }
-
-        if(full) {
-            lines_cleared++;
-            for(k = row; k > 0; k--) {
-                for(col = 0; col < 10 // Colonne della griglia di gioco; col++) {
-                    board[k][col] = board[k-1][col];
-                }
+        if (full) {
+            lines_found++;
+            for (k = r; k > 0; k--) {
+                for (c = 0; c < 10; c++) board[k][c] = board[k-1][c];
             }
-            for(col = 0; col < 10 // Colonne della griglia di gioco; col++) {
-                board[0][col] = 0x0000 // Sfondo;
-            }
-            row++;
+            for (c = 0; c < 10; c++) board[0][c] = 0x0000;
+            r++;
         }
     }
-
-    if(lines_cleared > 0) {
-        // Aggiorna Linee Totali
-        lines_cleared_total += lines_cleared;
-        sprintf(str, "%d", lines_cleared_total);
-        GUI_Text(160, 90, (uint8_t *)str, 0xFFFF, 0x0000);
-
-        // Aggiorna Punti (Specifica 9)
-        if (lines_cleared == 4) {
-            score += 600;
-        } else {
-            score += (lines_cleared * 100);
-        }
-
-        sprintf(str, "%d", score);
-        GUI_Text(160, 40, (uint8_t *)str, 0xFFFF, 0x0000);
-
-        // Ridisegna griglia
-        for(row=0; row<20 // Righe della griglia di gioco; row++) {
-             for(col=0; col<10 // Colonne della griglia di gioco; col++) {
-                 draw_grid_cell(row, col, board[row][col]);
-             }
+    if (lines_found > 0) {
+        lines_cleared_total += lines_found;
+        score += (lines_found == 4) ? 600 : (lines_found * 100);
+        update_label(90, lines_cleared_total, 0xFFFF);
+        update_label(40, score, 0xFFFF);
+        for (r = 0; r < 20; r++) {
+            for (c = 0; c < 10; c++) draw_grid_cell(r, c, board[r][c]);
         }
     }
 }
 
 void spawn_block(void) {
     int i;
-    // Primo avvio
     if (currentBlock.type == 0 && nextBlock.type == 0) {
         nextBlock.type = (BlockType)(rand() % 7);
         nextBlock.color = TETROMINO_COLORS[nextBlock.type];
-        nextBlock.rotation = 0;
         for(i=0; i<4; i++) nextBlock.cells[i] = TETROMINO_SHAPES[nextBlock.type][i];
     }
-
     currentBlock = nextBlock;
     currentBlock.position.row = 1;
-    currentBlock.position.col = 10 // Colonne della griglia di gioco / 2;
-
-    draw_block_in_preview(currentBlock, 0x0000 // Sfondo); // Cancella
+    currentBlock.position.col = 10 / 2;
+    draw_block_preview(currentBlock, 0x0000);
 
     nextBlock.type = (BlockType)(rand() % 7);
     nextBlock.color = TETROMINO_COLORS[nextBlock.type];
-    nextBlock.rotation = 0;
     for(i=0; i<4; i++) nextBlock.cells[i] = TETROMINO_SHAPES[nextBlock.type][i];
-
-    draw_block_in_preview(nextBlock, nextBlock.color); // Disegna
-}
-
-// Questa funzione viene chiamata da KEY 1 (IRQ_RIT)
-void on_key1_pressed(void) {
-    // --- GENERAZIONE CASUALE (SEED) ---
-    // Usiamo il valore attuale del Timer0 (TC) come seme.
-    // Poiché il timer corre a 25MHz (o simile), è impossibile premere
-    // il tasto nello stesso identico microsecondo due volte.
-    // Questo garantisce partite sempre diverse.
-    srand(((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x04000) )->TC);
-
-    // 1. Se GAME OVER -> Ricomincia partita
-    if (status == GAME_OVER) {
-        // NON richiamare game_init() qui dentro (siamo in RIT IRQ)
-        restart_requested = 1; // segnalo alla logica di gioco che deve riavviare
-        return;
-    }
-
-    // 2. Se PAUSA -> Riprendi
-    if (status == GAME_PAUSED) {
-        status = GAME_RUNNING;
-
-        // Cancella la scritta "PAUSED" scrivendoci sopra spazi neri
-        GUI_Text(160, 265, (uint8_t *) "      ", 0x0000, 0x0000);
-
-        // (Opzionale) Se è proprio l'inizio della partita (score 0), 
-        // potremmo rigenerare il nextBlock qui per rendere casuale anche il secondo pezzo,
-        // ma generalmente basta che siano casuali tutti quelli successivi.
-    }
-    // 3. Se RUNNING -> Metti in Pausa
-    else if (status == GAME_RUNNING) {
-        status = GAME_PAUSED;
-        GUI_Text(160, 265, (uint8_t *) "PAUSED", 0xFFE0, 0x0000);
-    }
-}
-void game_init(void) {
-    int i, j;
-
-    // PRIORITA' INTERRUPT
-    __NVIC_SetPriority(RIT_IRQn, 1);
-    __NVIC_SetPriority(TIMER0_IRQn, 2);
-
-    for(i = 0; i < 20 // Righe della griglia di gioco; i++) {
-        for(j = 0; j < 10 // Colonne della griglia di gioco; j++) {
-            board[i][j] = 0x0000 // Sfondo;
-        }
-    }
-
-    score = 0;
-    lines_cleared_total = 0;
-
-    // Importante: Inizia in PAUSA come richiesto
-    status = GAME_PAUSED;
-
-    // Resetta i blocchi per forzare una nuova generazione pulita
-    currentBlock.type = 0;
-    nextBlock.type = 0;
-
-    LCD_Clear(0x0000 // Sfondo);
-    draw_board_static();
-    spawn_block();
+    draw_block_preview(nextBlock, nextBlock.color);
 }
 
 void lock_block(void) {
-    int i;
-    char str[15];
-
-    for(i = 0; i < 4; i++) {
-        int r = currentBlock.position.row + currentBlock.cells[i].row;
-        int c = currentBlock.position.col + currentBlock.cells[i].col;
-        if(r >= 0 && r < 20 // Righe della griglia di gioco && c >= 0 && c < 10 // Colonne della griglia di gioco) {
-            board[r][c] = currentBlock.color;
-        }
+    int i, r, c;
+    for (i = 0; i < 4; i++) {
+        r = currentBlock.position.row + currentBlock.cells[i].row;
+        c = currentBlock.position.col + currentBlock.cells[i].col;
+        if (r >= 0 && r < 20) board[r][c] = currentBlock.color;
     }
-
-    // Punti per piazzamento
     score += 10;
-    sprintf(str, "%d", score);
-    GUI_Text(160, 40, (uint8_t *)str, 0xFFFF, 0x0000);
-
+    update_label(40, score, 0xFFFF);
     hard_drop_mode = 0;
     check_lines();
-
     spawn_block();
-    draw_tetromino(currentBlock, currentBlock.color);
 
     if (check_collision(currentBlock)) {
         status = GAME_OVER;
-        GUI_Text(50, 150, (uint8_t *)"GAME OVER", 0xF800, 0xFFFF);
-
+        GUI_Text(50, 150, (uint8_t *)" GAME OVER ", 0xF800, 0xFFFF);
         if (score > highScore) {
             highScore = score;
-            sprintf(str, "%d", highScore);
-            GUI_Text(160, 140, (uint8_t *)str, 0xFFE0, 0x0000);
+            update_label(140, highScore, 0xFFE0);
             GUI_Text(50, 170, (uint8_t *)"NEW RECORD!", 0xFFE0, 0x0000);
         }
-
-        // Messaggio per ricominciare
         GUI_Text(30, 190, (uint8_t *)"PRESS KEY1", 0xFFFF, 0x0000);
+    } else {
+        draw_tetromino(currentBlock, currentBlock.color);
     }
 }
 
 void rotate_block(void) {
-    Block temp = currentBlock;
-    int i;
-    if (temp.type == O_BLOCK) return;
-    for(i = 0; i < 4; i++) {
-        int oldRow = temp.cells[i].row;
-        int oldCol = temp.cells[i].col;
-        temp.cells[i].row = oldCol;
-        temp.cells[i].col = -oldRow;
+    int i, tmp_r;
+    Block temp;
+    if (currentBlock.type == O_BLOCK) return;
+    temp = currentBlock;
+    for (i = 0; i < 4; i++) {
+        tmp_r = temp.cells[i].row;
+        temp.cells[i].row = temp.cells[i].col;
+        temp.cells[i].col = -tmp_r;
     }
-    temp.rotation = (temp.rotation + 1) % 4;
-    if (check_collision(temp) == 0) {
-        draw_tetromino(currentBlock, 0x0000 // Sfondo);
+    if (!check_collision(temp)) {
+        draw_tetromino(currentBlock, 0x0000);
         currentBlock = temp;
         draw_tetromino(currentBlock, currentBlock.color);
     }
 }
 
-static int ticks = 0;
+
+
+void on_key1_pressed(void) {
+    srand(((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x04000) )->TC);
+    if (status == GAME_OVER) {
+        restart_requested = 1;
+    } else if (status == GAME_PAUSED) {
+        status = GAME_RUNNING;
+        GUI_Text(160, 265, (uint8_t *)"      ", 0x0000, 0x0000);
+    } else {
+        status = GAME_PAUSED;
+        GUI_Text(160, 265, (uint8_t *)"PAUSED", 0xFFE0, 0x0000);
+    }
+}
+
+void game_init(void) {
+    int i, j;
+    __NVIC_SetPriority(RIT_IRQn, 1);
+    __NVIC_SetPriority(TIMER0_IRQn, 2);
+    for (i = 0; i < 20; i++) {
+        for (j = 0; j < 10; j++) board[i][j] = 0x0000;
+    }
+    score = 0;
+    lines_cleared_total = 0;
+    status = GAME_PAUSED;
+    currentBlock.type = nextBlock.type = 0;
+    LCD_Clear(0x0000);
+    draw_board();
+    spawn_block();
+}
 
 void game_update(void) {
     Block temp;
+    int threshold;
 
-     // Gestione restart richiesto
     if (restart_requested) {
         restart_requested = 0;
-        // Se vuoi disabilitare temporaneamente RIT mentre reinizializzi:
-        // __NVIC_DisableIRQ(RIT_IRQn);
         game_init();
-        // __NVIC_EnableIRQ(RIT_IRQn);
         return;
     }
-
-    // Se non è RUNNING, non fare nulla (Pausa o Game Over)
     if (status != GAME_RUNNING) return;
 
-    if (hard_drop_mode == 1) {
-        draw_tetromino(currentBlock, 0x0000 // Sfondo);
-        while (check_collision(currentBlock) == 0) {
-            currentBlock.position.row++;
-        }
+    if (hard_drop_mode) {
+        draw_tetromino(currentBlock, 0x0000);
+        while (!check_collision(currentBlock)) currentBlock.position.row++;
         currentBlock.position.row--;
         draw_tetromino(currentBlock, currentBlock.color);
         lock_block();
         return;
     }
 
-    if (J_up != 0) {
-        rotate_block();
-        J_up = 0;
-    }
-    if (J_left != 0) {
+    if (J_up) { rotate_block(); J_up = 0; }
+    if (J_left || J_right) {
         temp = currentBlock;
-        temp.position.col--;
-        if (check_collision(temp) == 0) {
-            draw_tetromino(currentBlock, 0x0000 // Sfondo);
+        if (J_left) temp.position.col--;
+        if (J_right) temp.position.col++;
+        if (!check_collision(temp)) {
+            draw_tetromino(currentBlock, 0x0000);
             currentBlock = temp;
             draw_tetromino(currentBlock, currentBlock.color);
         }
-        J_left = 0;
-    }
-    if (J_right != 0) {
-        temp = currentBlock;
-        temp.position.col++;
-        if (check_collision(temp) == 0) {
-            draw_tetromino(currentBlock, 0x0000 // Sfondo);
-            currentBlock = temp;
-            draw_tetromino(currentBlock, currentBlock.color);
-        }
-        J_right = 0;
+        J_left = J_right = 0;
     }
 
-    ticks++;
-    int threshold = 40;
-    if (J_down != 0) threshold = 2;
-
-    if (ticks >= threshold) {
-        ticks = 0;
+    drop_ticks++;
+    threshold = (J_down) ? 2 : 40;
+    if (drop_ticks >= threshold) {
+        drop_ticks = 0;
         temp = currentBlock;
         temp.position.row++;
         if (check_collision(temp)) {
             lock_block();
         } else {
-            draw_tetromino(currentBlock, 0x0000 // Sfondo);
+            draw_tetromino(currentBlock, 0x0000);
             currentBlock.position.row++;
             draw_tetromino(currentBlock, currentBlock.color);
         }

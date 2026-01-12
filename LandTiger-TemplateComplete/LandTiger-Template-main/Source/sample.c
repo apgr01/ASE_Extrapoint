@@ -38,36 +38,30 @@ unsigned char taps = 0x41; //01000001
  *----------------------------------------------------------------------------*/
 
 int main(void) {
-    SystemInit();  
+
+    /* Inizializzazione di sistema e display */
+    SystemInit();
     LCD_Initialization();
-    LCD_Clear(T_Black); 
+    LCD_Clear(T_Black);
 
+    /* Inizializzazione input */
+    joystick_init();
+    BUTTON_init();
 
-		joystick_init(); 
-		BUTTON_init();
+    /* RIT: gestione input (debounce + joystick) */
+    init_RIT(0x10625A0);
+    enable_RIT();
 
-
-    init_RIT(0x10625A0); // 25ms clock
-    enable_RIT();         // Avvia il RIT
-
-    // ------------------------------------------------
-    // 3. INIZIALIZZAZIONE TIMER 0 (Engine di Gioco)
-    // ------------------------------------------------
-    // Questo è il motore veloce che abbiamo settato prima
-    init_timer(0, 0, 0, 3, 0x00098968); 
+    /* Timer 0: clock del gioco */
+    init_timer(0, 0, 0, 3, 0x00098968);
     enable_timer(0);
-    
-    // Abilita interruzione Timer 0 (FONDAMENTALE)
     NVIC_EnableIRQ(TIMER0_IRQn);
 
-    // ------------------------------------------------
-    // 4. AVVIO GIOCO
-    // ------------------------------------------------
+    /* Avvio del gioco */
     game_init();
-    
-    while(1) {
-        // Lascia pure wfi, ora non darà fastidio perché
-        // abbiamo due timer che svegliano la CPU costantemente
-        __ASM("wfi");
+
+    /* Loop principale */
+    while (1) {
+        __ASM("wfi");       // CPU in sleep, risvegliata dagli interrupt
     }
 }

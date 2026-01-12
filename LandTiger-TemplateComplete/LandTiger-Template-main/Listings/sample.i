@@ -2175,109 +2175,87 @@ void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor);
 # 6 "Source\\game.h" 2
-
-// --- Dimensioni e Costanti di Gioco ---
-
-
-
-
-
-
-
-// Calcolo offset per centrare la griglia o metterla a sinistra
-// Esempio: Margine sinistro di 5 pixel, Margine alto di 10 pixel
-
-
-
-// Stati del Gioco
+# 24 "Source\\game.h"
 typedef enum {
     GAME_OVER,
     GAME_RUNNING,
     GAME_PAUSED
 } GameStatus;
 
-// Tipi di Tetramini (I, J, L, O, S, T, Z)
+
 typedef enum {
-    I_BLOCK, J_BLOCK, L_BLOCK, O_BLOCK, S_BLOCK, T_BLOCK, Z_BLOCK
+    I_BLOCK,
+    J_BLOCK,
+    L_BLOCK,
+    O_BLOCK,
+    S_BLOCK,
+    T_BLOCK,
+    Z_BLOCK
 } BlockType;
-
-// --- Colori Tetris (Formato RGB565) ---
-// Formato: 5 bit Rosso, 6 bit Verde, 5 bit Blu
-// I nomi iniziano con T_ per distinguerli da quelli di sistema
-# 44 "Source\\game.h"
-// Colori di utilità
-
-
-
-
-
-// --- Strutture Dati ---
-
-// Un punto nella griglia (coordinate riga, colonna)
+# 59 "Source\\game.h"
 typedef struct {
     int row;
     int col;
 } Point;
 
-// Definizione di un blocco (Tetramino)
 typedef struct {
-    Point cells[4]; // Ogni blocco è formato da 4 celle
-    Point position; // Posizione (riga, colonna) del centro/pivot del blocco nella griglia
-    uint16_t color; // Colore del blocco (usiamo i colori definiti in GLCD.h)
-    BlockType type; // Tipo di blocco
-    int rotation; // Stato di rotazione (0, 1, 2, 3)
+    Point cells[4]; // celle che compongono il blocco
+    Point position; // posizione nella griglia
+    uint16_t color;
+    BlockType type;
+    int rotation;
 } Block;
 
-// Variabili Globali Esterne (accessibili da main e interrupt)
-extern uint16_t board[20 // Righe della griglia di gioco][10 // Colonne della griglia di gioco]; // Matrice che rappresenta la griglia (contiene i colori)
-extern Block currentBlock; // Il blocco che sta cadendo
-extern Block nextBlock; // Il prossimo blocco (per la preview)
-extern volatile GameStatus status; // Stato corrente del gioco
-extern int score; // Punteggio corrente
 
-// --- Prototipi di Funzione ---
-void game_init(void); // Inizializza variabili e schermo
-void game_update(void); // Logica principale (chiamata dal timer)
-void spawn_block(void); // Genera un nuovo blocco
-void draw_board_static(void); // Disegna i contorni statici
+
+
+extern uint16_t board[20][10];
+extern Block currentBlock;
+extern Block nextBlock;
+
+extern volatile GameStatus status;
 extern volatile int hard_drop_mode;
-extern void on_key1_pressed(void);
+
+extern int score;
+
+
+
+
+void game_init(void);
+void game_update(void);
+void spawn_block(void);
+void draw_board_static(void);
+void on_key1_pressed(void);
 # 25 "Source/sample.c" 2
 
 
 extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emulator to find the symbol (can be placed also inside system_LPC17xx.h but since it is RO, it needs more work)
 # 40 "Source/sample.c"
 int main(void) {
+
+
     SystemInit();
     LCD_Initialization();
-    LCD_Clear(0x0000 // Sfondo);
+    LCD_Clear(0x0000);
 
 
-  joystick_init();
-  BUTTON_init();
+    joystick_init();
+    BUTTON_init();
 
 
-    init_RIT(0x10625A0); // 25ms clock
-    enable_RIT(); // Avvia il RIT
+    init_RIT(0x10625A0);
+    enable_RIT();
 
-    // ------------------------------------------------
-    // 3. INIZIALIZZAZIONE TIMER 0 (Engine di Gioco)
-    // ------------------------------------------------
-    // Questo è il motore veloce che abbiamo settato prima
+
     init_timer(0, 0, 0, 3, 0x00098968);
     enable_timer(0);
-
-    // Abilita interruzione Timer 0 (FONDAMENTALE)
     __NVIC_EnableIRQ(TIMER0_IRQn);
 
-    // ------------------------------------------------
-    // 4. AVVIO GIOCO
-    // ------------------------------------------------
+
     game_init();
 
-    while(1) {
-        // Lascia pure wfi, ora non darà fastidio perché
-        // abbiamo due timer che svegliano la CPU costantemente
-        __asm("wfi");
+
+    while (1) {
+        __asm("wfi"); // CPU in sleep, risvegliata dagli interrupt
     }
 }

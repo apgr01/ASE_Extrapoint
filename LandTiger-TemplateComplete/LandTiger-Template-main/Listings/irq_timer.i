@@ -2183,73 +2183,57 @@ void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor);
 # 6 "Source/timer\\../game.h" 2
-
-// --- Dimensioni e Costanti di Gioco ---
-
-
-
-
-
-
-
-// Calcolo offset per centrare la griglia o metterla a sinistra
-// Esempio: Margine sinistro di 5 pixel, Margine alto di 10 pixel
-
-
-
-// Stati del Gioco
+# 24 "Source/timer\\../game.h"
 typedef enum {
     GAME_OVER,
     GAME_RUNNING,
     GAME_PAUSED
 } GameStatus;
 
-// Tipi di Tetramini (I, J, L, O, S, T, Z)
+
 typedef enum {
-    I_BLOCK, J_BLOCK, L_BLOCK, O_BLOCK, S_BLOCK, T_BLOCK, Z_BLOCK
+    I_BLOCK,
+    J_BLOCK,
+    L_BLOCK,
+    O_BLOCK,
+    S_BLOCK,
+    T_BLOCK,
+    Z_BLOCK
 } BlockType;
-
-// --- Colori Tetris (Formato RGB565) ---
-// Formato: 5 bit Rosso, 6 bit Verde, 5 bit Blu
-// I nomi iniziano con T_ per distinguerli da quelli di sistema
-# 44 "Source/timer\\../game.h"
-// Colori di utilità
-
-
-
-
-
-// --- Strutture Dati ---
-
-// Un punto nella griglia (coordinate riga, colonna)
+# 59 "Source/timer\\../game.h"
 typedef struct {
     int row;
     int col;
 } Point;
 
-// Definizione di un blocco (Tetramino)
 typedef struct {
-    Point cells[4]; // Ogni blocco è formato da 4 celle
-    Point position; // Posizione (riga, colonna) del centro/pivot del blocco nella griglia
-    uint16_t color; // Colore del blocco (usiamo i colori definiti in GLCD.h)
-    BlockType type; // Tipo di blocco
-    int rotation; // Stato di rotazione (0, 1, 2, 3)
+    Point cells[4]; // celle che compongono il blocco
+    Point position; // posizione nella griglia
+    uint16_t color;
+    BlockType type;
+    int rotation;
 } Block;
 
-// Variabili Globali Esterne (accessibili da main e interrupt)
-extern uint16_t board[20 // Righe della griglia di gioco][10 // Colonne della griglia di gioco]; // Matrice che rappresenta la griglia (contiene i colori)
-extern Block currentBlock; // Il blocco che sta cadendo
-extern Block nextBlock; // Il prossimo blocco (per la preview)
-extern volatile GameStatus status; // Stato corrente del gioco
-extern int score; // Punteggio corrente
 
-// --- Prototipi di Funzione ---
-void game_init(void); // Inizializza variabili e schermo
-void game_update(void); // Logica principale (chiamata dal timer)
-void spawn_block(void); // Genera un nuovo blocco
-void draw_board_static(void); // Disegna i contorni statici
+
+
+extern uint16_t board[20][10];
+extern Block currentBlock;
+extern Block nextBlock;
+
+extern volatile GameStatus status;
 extern volatile int hard_drop_mode;
-extern void on_key1_pressed(void);
+
+extern int score;
+
+
+
+
+void game_init(void);
+void game_update(void);
+void spawn_block(void);
+void draw_board_static(void);
+void on_key1_pressed(void);
 # 15 "Source/timer/IRQ_timer.c" 2
 # 26 "Source/timer/IRQ_timer.c"
 void TIMER0_IRQHandler (void)
@@ -2257,8 +2241,8 @@ void TIMER0_IRQHandler (void)
  if(((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x04000) )->IR & 1) // MR0
  {
   // your code
-  // Esegui la logica di gioco
-        game_update();
+  // Update del gioco
+    game_update();
   ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x04000) )->IR = 1; //clear interrupt flag
  }
  else if(((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x04000) )->IR & 2){ // MR1

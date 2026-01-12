@@ -2164,73 +2164,57 @@ void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor);
 # 6 "Source/RIT\\../game.h" 2
-
-// --- Dimensioni e Costanti di Gioco ---
-
-
-
-
-
-
-
-// Calcolo offset per centrare la griglia o metterla a sinistra
-// Esempio: Margine sinistro di 5 pixel, Margine alto di 10 pixel
-
-
-
-// Stati del Gioco
+# 24 "Source/RIT\\../game.h"
 typedef enum {
     GAME_OVER,
     GAME_RUNNING,
     GAME_PAUSED
 } GameStatus;
 
-// Tipi di Tetramini (I, J, L, O, S, T, Z)
+
 typedef enum {
-    I_BLOCK, J_BLOCK, L_BLOCK, O_BLOCK, S_BLOCK, T_BLOCK, Z_BLOCK
+    I_BLOCK,
+    J_BLOCK,
+    L_BLOCK,
+    O_BLOCK,
+    S_BLOCK,
+    T_BLOCK,
+    Z_BLOCK
 } BlockType;
-
-// --- Colori Tetris (Formato RGB565) ---
-// Formato: 5 bit Rosso, 6 bit Verde, 5 bit Blu
-// I nomi iniziano con T_ per distinguerli da quelli di sistema
-# 44 "Source/RIT\\../game.h"
-// Colori di utilità
-
-
-
-
-
-// --- Strutture Dati ---
-
-// Un punto nella griglia (coordinate riga, colonna)
+# 59 "Source/RIT\\../game.h"
 typedef struct {
     int row;
     int col;
 } Point;
 
-// Definizione di un blocco (Tetramino)
 typedef struct {
-    Point cells[4]; // Ogni blocco è formato da 4 celle
-    Point position; // Posizione (riga, colonna) del centro/pivot del blocco nella griglia
-    uint16_t color; // Colore del blocco (usiamo i colori definiti in GLCD.h)
-    BlockType type; // Tipo di blocco
-    int rotation; // Stato di rotazione (0, 1, 2, 3)
+    Point cells[4]; // celle che compongono il blocco
+    Point position; // posizione nella griglia
+    uint16_t color;
+    BlockType type;
+    int rotation;
 } Block;
 
-// Variabili Globali Esterne (accessibili da main e interrupt)
-extern uint16_t board[20 // Righe della griglia di gioco][10 // Colonne della griglia di gioco]; // Matrice che rappresenta la griglia (contiene i colori)
-extern Block currentBlock; // Il blocco che sta cadendo
-extern Block nextBlock; // Il prossimo blocco (per la preview)
-extern volatile GameStatus status; // Stato corrente del gioco
-extern int score; // Punteggio corrente
 
-// --- Prototipi di Funzione ---
-void game_init(void); // Inizializza variabili e schermo
-void game_update(void); // Logica principale (chiamata dal timer)
-void spawn_block(void); // Genera un nuovo blocco
-void draw_board_static(void); // Disegna i contorni statici
+
+
+extern uint16_t board[20][10];
+extern Block currentBlock;
+extern Block nextBlock;
+
+extern volatile GameStatus status;
 extern volatile int hard_drop_mode;
-extern void on_key1_pressed(void);
+
+extern int score;
+
+
+
+
+void game_init(void);
+void game_update(void);
+void spawn_block(void);
+void draw_board_static(void);
+void on_key1_pressed(void);
 # 15 "Source/RIT/IRQ_RIT.c" 2
 
 
@@ -2264,141 +2248,66 @@ int const long_press_count_1 = 0; // => count = x / 50ms ; where x = time long p
 void RIT_IRQHandler(void)
 {
 
- unsigned char UP_LEFT_activated = 0;
- unsigned char UP_RIGHT_activated = 0;
- unsigned char DOWN_LEFT_activated = 0;
- unsigned char DOWN_RIGHT_activated = 0;
+    if (down_0 != 0) {
+        down_0++;
+
+        if ((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00040) )->FIOPIN & (1 << 10)) == 0) { // pulsante premuto
+            if (down_0 == 2) {
+                toRelease_down_0 = 1;
+            }
+        } else { // pulsante rilasciato
+            toRelease_down_0 = 0;
+            down_0 = 0;
+
+            __NVIC_EnableIRQ(EINT0_IRQn);
+            ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL4 |= (1 << 20); // ripristina EINT0
+        }
+    }
+
+
+    if (down_1 != 0) {
+        down_1++;
+
+        if ((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00040) )->FIOPIN & (1 << 11)) == 0) { // pulsante premuto
+            if (down_1 == 2) {
+                on_key1_pressed(); // handler key 1
+                toRelease_down_1 = 1;
+            }
+        } else { // pulsante rilasciato
+            toRelease_down_1 = 0;
+            down_1 = 0;
+
+            __NVIC_EnableIRQ(EINT1_IRQn);
+            ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL4 |= (1 << 22); // ripristina EINT1
+        }
+    }
+
+
+    if (down_2 != 0) {
+        down_2++;
+
+        if ((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00040) )->FIOPIN & (1 << 12)) == 0) { // pulsante premuto
+            if (down_2 == 2) {
+                hard_drop_mode = 1; // attivo hard drop mode
+                toRelease_down_2 = 1;
+            }
+        } else { // pulsante rilasciato
+            toRelease_down_2 = 0;
+            down_2 = 0;
+
+            __NVIC_EnableIRQ(EINT2_IRQn);
+            ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL4 |= (1 << 24); // ripristina EINT2
+        }
+    }
 
 
 
- if(down_0 !=0) {
-  down_0++;
-  if((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00040) )->FIOPIN & (1<<10)) == 0){
-   switch(down_0) {
-    case 2:
-     // short press
-       // your_code
-     toRelease_down_0 = 1;
-     break;
-    case long_press_count_1:
-     // your code here (for long press)
-     break;
-    default:
-     break;
-   }
-  }
-  else {
-   if(toRelease_down_0){
-    //add code to manage release.
-    toRelease_down_0=0;
-   }
-   down_0=0;
-   __NVIC_EnableIRQ(EINT0_IRQn);
-   ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL4 |= (1 << 20);
-  }
- } // end INT0
-
- ///////////////////////////////////////////////////////////////////
+    J_click = ((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00020) )->FIOPIN & (1 << 25)) == 0);
+    J_down = ((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00020) )->FIOPIN & (1 << 26)) == 0);
+    J_left = ((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00020) )->FIOPIN & (1 << 27)) == 0);
+    J_right = ((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00020) )->FIOPIN & (1 << 28)) == 0);
+    J_up = ((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00020) )->FIOPIN & (1 << 29)) == 0);
 
 
- if(down_1 !=0) {
-  down_1++;
-  if((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00040) )->FIOPIN & (1<<11)) == 0){
-   switch(down_1){
-    case 2:
-     // --- MODIFICA QUI ---
-     // Appena il tasto è confermato premuto, chiamo la logica di gioco
-     on_key1_pressed();
-     // --------------------
-
-     toRelease_down_1=1;
-     break;
-    case long_press_count_1:
-     break;
-    default:
-     break;
-   }
-  }
-  else {
-   if(toRelease_down_1){
-    toRelease_down_1=0;
-   }
-   down_1=0;
-   __NVIC_EnableIRQ(EINT1_IRQn);
-   ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL4 |= (1 << 22);
-  }
- }
-
- ///////////////////////////////////////////////////////////////////
-
-
- if(down_2 !=0) {
-  down_2++;
-  // Controlla se il tasto P2.12 è ancora premuto
-  if((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00040) )->FIOPIN & (1<<12)) == 0){
-   switch(down_2){
-    case 2:
-     // --- QUI SCATTA L'AZIONE (Short Press) ---
-
-     hard_drop_mode = 1; // <--- AGGIUNGI QUESTA RIGA
-
-     toRelease_down_2=1;
-     break;
-    case long_press_count_1:
-     // Codice per pressione lunga (non serve ora)
-     break;
-    default:
-     break;
-   }
-  }
-  else {
-   if(toRelease_down_2){
-    toRelease_down_2=0;
-   }
-   down_2=0;
-   __NVIC_EnableIRQ(EINT2_IRQn); // Riabilita l'interrupt per la prossima volta
-   ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL4 |= (1 << 24);
-  }
- }
- ///////////////////////////////////////////////////////////////////
-// --- GESTIONE JOYSTICK (Diretta e Veloce) ---
-
-// SELECT (P1.25)
-if((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00020) )->FIOPIN & (1<<25)) == 0) {
-    J_click = 1;
-} else {
-    J_click = 0;
-}
-
-// DOWN (P1.26)
-if((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00020) )->FIOPIN & (1<<26)) == 0) {
-    J_down = 1;
-} else {
-    J_down = 0;
-}
-
-// LEFT (P1.27)
-if((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00020) )->FIOPIN & (1<<27)) == 0) {
-    J_left = 1;
-} else {
-    J_left = 0;
-}
-
-// RIGHT (P1.28)
-if((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00020) )->FIOPIN & (1<<28)) == 0) {
-    J_right = 1;
-} else {
-    J_right = 0;
-}
-
-// UP (P1.29)
-if((((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00020) )->FIOPIN & (1<<29)) == 0) {
-    J_up = 1;
-} else {
-    J_up = 0;
-}
- //reset_RIT(); se ci sono cose strane come il rit che si ferma
- ((LPC_RIT_TypeDef *) ((0x40080000UL) + 0x30000) )->RICTRL |= 0x1;
-
- return;
+    ((LPC_RIT_TypeDef *) ((0x40080000UL) + 0x30000) )->RICTRL |= 0x01;
 }
