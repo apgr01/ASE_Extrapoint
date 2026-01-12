@@ -2164,6 +2164,9 @@ void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor);
 # 6 "Source/RIT\\../game.h" 2
+
+
+// Modifica questi valori per testare rapidamente
 # 24 "Source/RIT\\../game.h"
 typedef enum {
     GAME_OVER,
@@ -2171,50 +2174,51 @@ typedef enum {
     GAME_PAUSED
 } GameStatus;
 
+// Nuovo Enum per i PowerUp
+typedef enum {
+    POWER_NONE = 0,
+    POWER_CLEAR, // Identificato dalla lettera 'C'
+    POWER_SLOW // Identificato dalla lettera 'S'
+} PowerUpType;
 
 typedef enum {
-    I_BLOCK,
-    J_BLOCK,
-    L_BLOCK,
-    O_BLOCK,
-    S_BLOCK,
-    T_BLOCK,
-    Z_BLOCK
+    I_BLOCK, J_BLOCK, L_BLOCK, O_BLOCK, S_BLOCK, T_BLOCK, Z_BLOCK
 } BlockType;
-# 59 "Source/RIT\\../game.h"
+# 54 "Source/RIT\\../game.h"
 typedef struct {
     int row;
     int col;
 } Point;
 
 typedef struct {
-    Point cells[4]; // celle che compongono il blocco
-    Point position; // posizione nella griglia
+    Point cells[4];
+    Point position;
     uint16_t color;
     BlockType type;
     int rotation;
 } Block;
 
 
-
-
 extern uint16_t board[20][10];
+// Nuova matrice parallela per tracciare dove sono i powerup
+extern uint8_t board_powers[20][10];
+
 extern Block currentBlock;
 extern Block nextBlock;
-
 extern volatile GameStatus status;
 extern volatile int hard_drop_mode;
-
 extern int score;
 
-
+// Contatori per la logica extrapoints
+extern int total_lines_cleared;
 
 
 void game_init(void);
 void game_update(void);
-void spawn_block(void);
-void draw_board_static(void);
-void on_key1_pressed(void);
+// Aggiungeremo queste funzioni dopo, per ora le dichiaro
+void apply_powerup(PowerUpType type, int row);
+void spawn_random_powerup(void);
+void apply_malus(void);
 # 15 "Source/RIT/IRQ_RIT.c" 2
 
 

@@ -1792,6 +1792,9 @@ void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor);
 # 6 "Source\\game.h" 2
+
+
+// Modifica questi valori per testare rapidamente
 # 24 "Source\\game.h"
 typedef enum {
     GAME_OVER,
@@ -1799,50 +1802,51 @@ typedef enum {
     GAME_PAUSED
 } GameStatus;
 
+// Nuovo Enum per i PowerUp
+typedef enum {
+    POWER_NONE = 0,
+    POWER_CLEAR, // Identificato dalla lettera 'C'
+    POWER_SLOW // Identificato dalla lettera 'S'
+} PowerUpType;
 
 typedef enum {
-    I_BLOCK,
-    J_BLOCK,
-    L_BLOCK,
-    O_BLOCK,
-    S_BLOCK,
-    T_BLOCK,
-    Z_BLOCK
+    I_BLOCK, J_BLOCK, L_BLOCK, O_BLOCK, S_BLOCK, T_BLOCK, Z_BLOCK
 } BlockType;
-# 59 "Source\\game.h"
+# 54 "Source\\game.h"
 typedef struct {
     int row;
     int col;
 } Point;
 
 typedef struct {
-    Point cells[4]; // celle che compongono il blocco
-    Point position; // posizione nella griglia
+    Point cells[4];
+    Point position;
     uint16_t color;
     BlockType type;
     int rotation;
 } Block;
 
 
-
-
 extern uint16_t board[20][10];
+// Nuova matrice parallela per tracciare dove sono i powerup
+extern uint8_t board_powers[20][10];
+
 extern Block currentBlock;
 extern Block nextBlock;
-
 extern volatile GameStatus status;
 extern volatile int hard_drop_mode;
-
 extern int score;
 
-
+// Contatori per la logica extrapoints
+extern int total_lines_cleared;
 
 
 void game_init(void);
 void game_update(void);
-void spawn_block(void);
-void draw_board_static(void);
-void on_key1_pressed(void);
+// Aggiungeremo queste funzioni dopo, per ora le dichiaro
+void apply_powerup(PowerUpType type, int row);
+void spawn_random_powerup(void);
+void apply_malus(void);
 # 2 "Source/game.c" 2
 
 # 1 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 1 3
@@ -2333,6 +2337,8 @@ extern __attribute__((__nothrow__)) void __use_no_semihosting(void);
 # 5 "Source/game.c" 2
 # 16 "Source/game.c"
 uint16_t board[20][10];
+uint8_t board_powers[20][10];
+
 Block currentBlock, nextBlock;
 volatile GameStatus status = GAME_PAUSED;
 
@@ -2376,11 +2382,26 @@ void draw_grid_cell(int row, int col, uint16_t color) {
     int x0 = 5 + (col * 15);
     int y0 = 10 + (row * 15);
 
+    // 1. Disegna il quadrato colorato (invariato)
     for (i = 0; i < 15; i++) {
         for (j = 0; j < 15; j++) {
             uint16_t p_color = (i == 15 - 1 || j == 15 - 1) ? 0x0000 : color;
             LCD_SetPoint(x0 + j, y0 + i, p_color);
         }
+    }
+
+    // 2. Overlay Lettera PowerUp (Modificato)
+    if (color != 0x0000 && board_powers[row][col] != POWER_NONE) {
+        char letter[2] = " ";
+        if (board_powers[row][col] == POWER_CLEAR) letter[0] = 'C';
+        else if (board_powers[row][col] == POWER_SLOW) letter[0] = 'S';
+
+        // CORREZIONE POSIZIONE E COLORE
+        // X: (15 - 8) / 2 = 3.5 -> Arrotondiamo a +4 per centrare orizzontalmente
+        // Y: Mettiamo a 0. Il font è alto 16px, il blocco 15px.
+        // Se mettiamo +4 sfora di 5px. A 0 sfora solo di 1px in basso (quasi invisibile).
+
+        GUI_Text(x0 + 4, y0, (uint8_t *)letter, 0x0000, color);
     }
 }
 
@@ -2441,6 +2462,145 @@ void draw_block_preview(Block blok, uint16_t color) {
     }
 }
 
+void spawn_random_powerup(void) {
+    int r, c;
+    int occupied_count = 0;
+    static Point occupied_blocks[20 * 10];
+
+    // 1. Cerca blocchi candidati (Pieni e senza potere)
+    for (r = 0; r < 20; r++) {
+        for (c = 0; c < 10; c++) {
+            if (board[r][c] != 0x0000 && board_powers[r][c] == POWER_NONE) {
+                occupied_blocks[occupied_count].row = r;
+                occupied_blocks[occupied_count].col = c;
+                occupied_count++;
+            }
+        }
+    }
+
+    if (occupied_count == 0) return; // Nessun blocco disponibile
+
+    // 2. Scegli a caso
+    int rand_idx = rand() % occupied_count;
+    Point target = occupied_blocks[rand_idx];
+
+    // 3. Assegna potere (50% Clear, 50% Slow)
+    PowerUpType new_power = (rand() % 2 == 0) ? POWER_CLEAR : POWER_SLOW;
+    board_powers[target.row][target.col] = new_power;
+
+    // 4. Ridisegna SOLO quella cella per mostrare la lettera
+    draw_grid_cell(target.row, target.col, board[target.row][target.col]);
+}
+
+void apply_malus(void) {
+    int i, r, c;
+
+    // 1. Controllo Game Over: Se la riga 0 non è vuota, abbiamo perso
+    for (c = 0; c < 10; c++) {
+        if (board[0][c] != 0x0000) {
+            status = GAME_OVER;
+            GUI_Text(50, 150, (uint8_t *)" GAME OVER ", 0xF800, 0xFFFF);
+            return;
+        }
+    }
+
+    // 2. Shift verso l'ALTO (da riga 1 a riga 0, ecc.)
+    for (r = 0; r < 20 - 1; r++) {
+        for (c = 0; c < 10; c++) {
+            board[r][c] = board[r+1][c];
+            board_powers[r][c] = board_powers[r+1][c]; // Sposta anche i poteri
+        }
+    }
+
+    // 3. Generazione Riga Sporca (Fondo)
+    // Creiamo un array temporaneo con 7 blocchi (1) e 3 buchi (0)
+    int row_pattern[10] = {1, 1, 1, 1, 1, 1, 1, 0, 0, 0};
+
+    // Shuffle dell'array (Fisher-Yates semplificato) per mischiare buchi e pieni
+    for (i = 0; i < 10; i++) {
+        int swap_idx = rand() % 10;
+        int temp = row_pattern[i];
+        row_pattern[i] = row_pattern[swap_idx];
+        row_pattern[swap_idx] = temp;
+    }
+
+    // Applica alla riga 19
+    for (c = 0; c < 10; c++) {
+        if (row_pattern[c] == 1) {
+            board[20 - 1][c] = 0x8410; // Colore per i blocchi malus (Grigio)
+            board_powers[20 - 1][c] = POWER_NONE;
+        } else {
+            board[20 - 1][c] = 0x0000;
+            board_powers[20 - 1][c] = POWER_NONE;
+        }
+    }
+
+    // 4. Ridisegna tutto il campo
+    for (r = 0; r < 20; r++) {
+        for (c = 0; c < 10; c++) draw_grid_cell(r, c, board[r][c]);
+    }
+}
+
+void apply_clear_half(void) {
+    int i, r, c, k;
+    int highest_row = 20; // Partiamo dal fondo+1 (vuoto)
+
+    // 1. Calcola l'altezza effettiva della pila (Trova la prima riga occupata dall'alto)
+    for (r = 0; r < 20; r++) {
+        for (c = 0; c < 10; c++) {
+            if (board[r][c] != 0x0000) {
+                highest_row = r;
+                goto found_height; // Esci dai due loop
+            }
+        }
+    }
+    found_height:;
+
+    // Se il campo è vuoto, esci
+    if (highest_row == 20) return;
+
+    int stack_height = 20 - highest_row;
+    int lines_to_remove = stack_height / 2;
+
+    // Se c'è meno di 2 righe (es. 1 riga), 1/2 = 0. Non facciamo nulla o togliamo l'ultima?
+    // Specifica: "Clear half". Se 1 riga, ne togliamo 0.
+    if (lines_to_remove == 0) return;
+
+    // 2. Rimuovi le 'lines_to_remove' righe PIÙ IN BASSO (dal fondo a salire)
+    // Eseguiamo lo shift verso il basso per ogni riga rimossa
+    for (i = 0; i < lines_to_remove; i++) {
+        // Copiamo tutto verso il basso a partire dalla penultima riga in su
+        // (Simile a quando si cancella una riga nel tetris classico)
+        for (k = 20 - 1; k > 0; k--) {
+            for (c = 0; c < 10; c++) {
+                board[k][c] = board[k-1][c];
+                board_powers[k][c] = board_powers[k-1][c];
+            }
+        }
+        // Pulisci riga 0
+        for (c = 0; c < 10; c++) {
+            board[0][c] = 0x0000;
+            board_powers[0][c] = POWER_NONE;
+        }
+    }
+
+    // 3. Punteggio (come da specifica)
+    // "award points in groups of 4"
+    int temp_lines = lines_to_remove;
+    while (temp_lines > 0) {
+        if (temp_lines >= 4) {
+            score += 600;
+            temp_lines -= 4;
+        } else {
+            score += (temp_lines * 100);
+            temp_lines = 0;
+        }
+    }
+    update_label(40, score, 0xFFFF);
+
+    // Nota: Ridisegneremo tutto alla fine di check_lines
+}
+
 
 
 int check_collision(Block b) {
@@ -2454,30 +2614,92 @@ int check_collision(Block b) {
     return 0;
 }
 
+// Variabili globali per l'effetto Slow (le definiremo meglio dopo, ma servono qui)
+volatile int slow_down_active = 0;
+volatile int slow_down_timer = 0;
+
 void check_lines(void) {
     int r, c, k, full, lines_found = 0;
 
+    // Flag memorizzati PRIMA di cancellare le righe
+    int trigger_clear_half = 0;
+    int trigger_slow = 0;
+
+    // --- STEP 1: Analisi e Pulizia Standard (La riga corrente viene eliminata) ---
     for (r = 20 - 1; r >= 0; r--) {
         full = 1;
         for (c = 0; c < 10; c++) {
             if (board[r][c] == 0x0000) { full = 0; break; }
         }
+
         if (full) {
-            lines_found++;
-            for (k = r; k > 0; k--) {
-                for (c = 0; c < 10; c++) board[k][c] = board[k-1][c];
+            // Controlla se c'erano powerup su QUESTA riga specifica
+            for (c = 0; c < 10; c++) {
+                if (board_powers[r][c] == POWER_CLEAR) trigger_clear_half = 1;
+                if (board_powers[r][c] == POWER_SLOW) trigger_slow = 1;
             }
-            for (c = 0; c < 10; c++) board[0][c] = 0x0000;
-            r++;
+
+            lines_found++;
+
+            // Elimina la riga e fai scendere tutto (Tetris Standard)
+            for (k = r; k > 0; k--) {
+                for (c = 0; c < 10; c++) {
+                    board[k][c] = board[k-1][c];
+                    board_powers[k][c] = board_powers[k-1][c];
+                }
+            }
+            // Pulisci riga 0
+            for (c = 0; c < 10; c++) {
+                board[0][c] = 0x0000;
+                board_powers[0][c] = POWER_NONE;
+            }
+            r++; // Ricontrolla la stessa riga (ora occupata da quella sopra)
         }
     }
-    if (lines_found > 0) {
-        lines_cleared_total += lines_found;
-        score += (lines_found == 4) ? 600 : (lines_found * 100);
-        update_label(90, lines_cleared_total, 0xFFFF);
-        update_label(40, score, 0xFFFF);
-        for (r = 0; r < 20; r++) {
-            for (c = 0; c < 10; c++) draw_grid_cell(r, c, board[r][c]);
+
+    // Se non abbiamo fatto righe, usciamo subito
+    if (lines_found == 0) return;
+
+    // --- Aggiornamento Punteggi Base ---
+    lines_cleared_total += lines_found;
+    score += (lines_found == 4) ? 600 : (lines_found * 100);
+    update_label(90, lines_cleared_total, 0xFFFF);
+    update_label(40, score, 0xFFFF);
+
+    // --- STEP 2: Generazione Nuovi PowerUP ---
+    // (Generiamo su ciò che è rimasto dopo la pulizia base)
+    if (lines_cleared_total % 2 // Ogni quante righe genero un powerup (Debug: 1) == 0) {
+         spawn_random_powerup();
+    }
+
+    // --- STEP 3: Attivazione Effetti PowerUP ---
+    // Avvengono DOPO che la riga trigger è sparita
+    if (trigger_clear_half) {
+        apply_clear_half(); // Rimuove metà delle righe RESTANTI
+    }
+
+    if (trigger_slow) {
+        slow_down_active = 1;
+        slow_down_timer = 15; // Reset timer a 15s
+        // Qui opzionalmente potresti mostrare un messaggio "SLOW!"
+    }
+
+    // --- STEP 4: Applicazione Malus ---
+    // Avviene per ULTIMO. Se ClearHalf ha pulito tutto, il Malus aggiungerà
+    // una riga in fondo senza uccidere il giocatore.
+    if (lines_cleared_total % 10 // Ogni quante righe genero un malus (Debug: 2) == 0) {
+         apply_malus();
+    }
+
+  // --- STEP 5: Ridisegno Finale OTTIMIZZATO ---
+    // NON usiamo LCD_Clear o draw_board, perché ridisegnano la cornice inutilmente.
+    // Ridisegniamo solo le celle della griglia di gioco.
+
+    for (r = 0; r < 20; r++) {
+        for (c = 0; c < 10; c++) {
+            // Questo ridisegna il blocco colorato, la lettera (se c'è) 
+            // oppure il nero se la cella è vuota, pulendo "sporcizia" precedente.
+            draw_grid_cell(r, c, board[r][c]);
         }
     }
 }
@@ -2569,6 +2791,13 @@ void game_init(void) {
     score = 0;
     lines_cleared_total = 0;
     status = GAME_PAUSED;
+  // Pulizia Board e Board Powers
+    for (i = 0; i < 20; i++) {
+        for (j = 0; j < 10; j++) {
+            board[i][j] = 0x0000;
+            board_powers[i][j] = POWER_NONE;
+        }
+    }
     currentBlock.type = nextBlock.type = 0;
     LCD_Clear(0x0000);
     draw_board();

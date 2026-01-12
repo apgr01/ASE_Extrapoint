@@ -633,6 +633,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>ADC</GroupName>
+          <Files>
+            <File>
+              <FileName>adc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Source\ADC\adc.h</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ADC\adc.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
@@ -1260,6 +1275,21 @@
               <FileName>TouchPanel.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Source\TouchPanel\TouchPanel.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ADC</GroupName>
+          <Files>
+            <File>
+              <FileName>adc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Source\ADC\adc.h</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ADC\adc.c</FilePath>
             </File>
           </Files>
         </Group>
