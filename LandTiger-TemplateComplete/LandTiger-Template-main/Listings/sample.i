@@ -5,7 +5,6 @@
 # 1 "<command line>" 1
 # 1 "<built-in>" 2
 # 1 "Source/sample.c" 2
-# 16 "Source/sample.c"
 # 1 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 1 3
 # 53 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
     typedef unsigned int size_t;
@@ -309,7 +308,7 @@ extern __attribute__((__nothrow__)) int _fisatty(FILE * ) __attribute__((__nonnu
 
 extern __attribute__((__nothrow__)) void __use_no_semihosting_swi(void);
 extern __attribute__((__nothrow__)) void __use_no_semihosting(void);
-# 17 "Source/sample.c" 2
+# 2 "Source/sample.c" 2
 # 1 "C:/Users/aproi/AppData/Local/Arm/Packs/Keil/LPC1700_DFP/2.7.2/Device/Include\\LPC17xx.h" 1
 # 41 "C:/Users/aproi/AppData/Local/Arm/Packs/Keil/LPC1700_DFP/2.7.2/Device/Include\\LPC17xx.h"
 typedef enum IRQn
@@ -2086,7 +2085,7 @@ typedef struct
        uint32_t RESERVED8;
   volatile uint32_t Module_ID;
 } LPC_EMAC_TypeDef;
-# 18 "Source/sample.c" 2
+# 3 "Source/sample.c" 2
 # 1 "Source\\led/led.h" 1
 # 12 "Source\\led/led.h"
 void LED_init(void);
@@ -2100,14 +2099,14 @@ void LED_Out_reverse(unsigned int value);
 void LED_OnAll(void);
 void LED_OffAll(void);
 void LED_Out_Range(unsigned int value, unsigned char from_led_num, unsigned char to_led_num);
-# 19 "Source/sample.c" 2
+# 4 "Source/sample.c" 2
 # 1 "Source\\button_EXINT/button.h" 1
 void BUTTON_init(void);
 
 void EINT0_IRQHandler(void);
 void EINT1_IRQHandler(void);
 void EINT2_IRQHandler(void);
-# 20 "Source/sample.c" 2
+# 5 "Source/sample.c" 2
 # 1 "Source\\timer/timer.h" 1
 # 14 "Source\\timer/timer.h"
 //uint32_t init_timer ( uint8_t timer_num, uint32_t Prescaler, uint8_t MatchReg, uint8_t SRImatchReg, uint32_t TimerInterval )
@@ -2128,7 +2127,7 @@ extern void TIMER0_IRQHandler (void);
 extern void TIMER1_IRQHandler (void);
 extern void TIMER2_IRQHandler (void);
 extern void TIMER3_IRQHandler (void);
-# 21 "Source/sample.c" 2
+# 6 "Source/sample.c" 2
 # 1 "Source\\RIT/RIT.h" 1
 # 17 "Source\\RIT/RIT.h"
 extern uint32_t init_RIT( uint32_t RITInterval );
@@ -2138,11 +2137,11 @@ extern void reset_RIT( void );
 unsigned int get_RIT_value();
 
 extern void RIT_IRQHandler (void);
-# 22 "Source/sample.c" 2
+# 7 "Source/sample.c" 2
 # 1 "Source\\joystick/joystick.h" 1
 # 12 "Source\\joystick/joystick.h"
 void joystick_init(void);
-# 23 "Source/sample.c" 2
+# 8 "Source/sample.c" 2
 # 1 "Source\\sample.h" 1
 
 # 1 "Source\\led/led.h" 1
@@ -2159,7 +2158,7 @@ void LED_OnAll(void);
 void LED_OffAll(void);
 void LED_Out_Range(unsigned int value, unsigned char from_led_num, unsigned char to_led_num);
 # 3 "Source\\sample.h" 2
-# 24 "Source/sample.c" 2
+# 9 "Source/sample.c" 2
 # 1 "Source\\game.h" 1
 
 
@@ -2230,7 +2229,7 @@ void game_update(void);
 void apply_powerup(PowerUpType type, int row);
 void spawn_random_powerup(void);
 void apply_malus(void);
-# 25 "Source/sample.c" 2
+# 10 "Source/sample.c" 2
 # 1 "Source\\adc/adc.h" 1
 # 1 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 1 3
 # 58 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
@@ -2363,14 +2362,14 @@ void ADC_start_conversion (void);
 
 
 void ADC_IRQHandler(void);
-# 26 "Source/sample.c" 2
+# 11 "Source/sample.c" 2
 # 1 "Source\\music/music.h" 1
 
 
 
 
 
-// --- DEFINIZIONI BASE ---
+// --- CONFIGURAZIONE TEMPO ---
 
 
 
@@ -2381,8 +2380,8 @@ typedef char BOOL;
 
 // --- STRUTTURA NOTA ---
 typedef struct {
-    uint32_t freq; // Valore del registro match per la frequenza
-    uint32_t duration; // Durata in tick del timer
+    uint32_t freq;
+    uint32_t duration;
 } NOTE;
 
 // --- DURATE ---
@@ -2394,53 +2393,97 @@ typedef enum note_durations {
     time_semiminima = (unsigned int)(0x17D7840 * 1 * 1.6 / 4.0f + 0.5),
     time_minima = (unsigned int)(0x17D7840 * 1 * 1.6 / 2.0f + 0.5),
     time_semibreve = (unsigned int)(0x17D7840 * 1 * 1.6 + 0.5),
-    time_pause = 0 // Frequenza per la pausa
+    time_pause = 0
 } NOTE_DURATION;
 
-// --- FREQUENZE (Valori K per Timer) ---
-// Se mancano nel tuo file originale, aggiungi queste per la scala centrale
+// --- FREQUENZE (Abbassa Tonalità) ---
+// Ho raddoppiato di nuovo i valori precedenti.
+// Valori più alti = Timer più lento = Suono più grave.
 enum frequencies {
     pause = 0,
-    c4 = 2120, d4 = 1890, e4 = 1684, f4 = 1592, g4 = 1417, a4 = 1263, b4 = 1125,
-    c5 = 1062, d5 = 945, e5 = 842, f5 = 796, g5 = 709, a5 = 632, b5 = 563
+    g4 = 5668, g4s = 5348, a4 = 5052, b4 = 4500,
+    c5 = 4248, d5 = 3780, e5 = 3368, f5 = 3184, g5 = 2836, a5 = 2528
 };
 
-// --- FUNZIONI ESPORTATE ---
+// --- FUNZIONI ---
 void music_init(void);
 void music_start(void);
 void music_stop(void);
 void music_pause_resume(int pause_flag);
-void music_player_tick(void); // Da chiamare nell'IRQ del Timer1
-# 27 "Source/sample.c" 2
-# 42 "Source/sample.c"
-int main(void) {
+void music_player_tick(void);
 
+// Variabile globale per il volume
+extern volatile int currentVolume;
+# 12 "Source/sample.c" 2
+
+
+
+
+
+int main(void) {
 
     SystemInit();
     LCD_Initialization();
-    LCD_Clear(0x0000);
-
+    LCD_Clear(0x0000); // Pulisce lo schermo
 
     joystick_init();
     BUTTON_init();
+    ADC_init();
+    music_init(); // Configura il pin dello speaker
 
-  ADC_init();
-  music_init();
+
+    // Bit 1=TIM0, Bit 2=TIM1, Bit 22=TIM2
+    ((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->PCONP |= (1 << 1) | (1 << 2) | (1 << 22);
+
+    // Resetta i clock dei timer (PCLK_TIMER = CCLK/4)
+    ((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->PCLKSEL0 &= ~((3<<2) | (3<<4));
+    ((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->PCLKSEL1 &= ~(3<<12);
+
+
+    // TIMER 0: Gioco (40Hz)
+    init_timer(0, 0, 0, 3, 0x00098968);
+
+    // TIMER 1: Musica Durata (Valore base, poi gestito da music.c)
+    // Se init_timer non supporta il canale 1, le righe PCONP sopra ci salvano
+    ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->PR = 0;
+    ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->MCR = 3; // Interrupt + Reset on Match
+
+    // TIMER 2: Musica Frequenza
+    ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->PR = 0;
+    ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->MCR = 3;
+
+
+    // IMPORTANTE: Timer 0 e RIT devono avere la stessa priorità (1)
+    __NVIC_SetPriority(RIT_IRQn, 1);
+    __NVIC_SetPriority(TIMER0_IRQn, 1);
+
+    // Musica a priorità più bassa (2)
+    __NVIC_SetPriority(TIMER1_IRQn, 2);
+    __NVIC_SetPriority(TIMER2_IRQn, 2);
+
+    // Abilita IRQ Timer nel ((NVIC_Type *) ((0xE000E000UL) + 0x0100UL) )
+    __NVIC_EnableIRQ(TIMER0_IRQn);
+    // (Timer 1 e 2 vengono abilitati in music_start, ma per sicurezza li abilitiamo)
+    __NVIC_EnableIRQ(TIMER1_IRQn);
+    __NVIC_EnableIRQ(TIMER2_IRQn);
 
 
     init_RIT(0x10625A0);
     enable_RIT();
 
+    // Assicuriamoci che i timer musicali siano spenti
+    disable_timer(1);
+    disable_timer(2);
 
-    init_timer(0, 0, 0, 3, 0x00098968);
-    enable_timer(0);
-    __NVIC_EnableIRQ(TIMER0_IRQn);
 
-
+    // Lo facciamo PRIMA di abilitare il Timer 0, così non ci sono conflitti video
     game_init();
 
 
+    // Ora che è tutto disegnato, accendiamo il motore del gioco
+    enable_timer(0);
+
     while (1) {
-        __asm("wfi"); // CPU in sleep, risvegliata dagli interrupt
+        __asm("wfi");
     }
 }

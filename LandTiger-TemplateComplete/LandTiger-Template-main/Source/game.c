@@ -396,6 +396,7 @@ void spawn_block(void) {
 }
 
 void lock_block(void) {
+    // ... (parte iniziale lock_block invariata) ...
     int i, r, c;
     for (i = 0; i < 4; i++) {
         r = currentBlock.position.row + currentBlock.cells[i].row;
@@ -410,11 +411,15 @@ void lock_block(void) {
     
     if (check_collision(currentBlock)) {
         status = GAME_OVER;
+        
+        // FERMA LA MUSICA
+        music_stop();
+        
         GUI_Text(50, 150, (uint8_t *)" GAME OVER ", Red, White);
         if (score > highScore) {
-            highScore = score;
-            update_label(Y_HISCORE, highScore, Yellow);
-            GUI_Text(50, 170, (uint8_t *)"NEW RECORD!", Yellow, Black);
+             highScore = score;
+             update_label(Y_HISCORE, highScore, Yellow);
+             GUI_Text(50, 170, (uint8_t *)"NEW RECORD!", Yellow, Black);
         }
         GUI_Text(30, 190, (uint8_t *)"PRESS KEY1", White, Black);
     } else {
@@ -443,28 +448,44 @@ void rotate_block(void) {
 
 void on_key1_pressed(void) {
     srand(LPC_TIM0->TC);
+    
     if (status == GAME_OVER) {
+        // Se è Game Over, il restart richiamerà game_init() che resetterà la musica
         restart_requested = 1;
-    } else if (status == GAME_PAUSED) {
+    } 
+    else if (status == GAME_PAUSED) {
+        // --- RIPRENDI ---
         status = GAME_RUNNING;
         GUI_Text(UI_COL_X, Y_STATUS, (uint8_t *)"      ", Black, Black);
-    } else {
+        
+        // Riprendi Musica
+        music_pause_resume(0); // 0 = Resume
+    } 
+    else {
+        // --- METTI IN PAUSA ---
         status = GAME_PAUSED;
         GUI_Text(UI_COL_X, Y_STATUS, (uint8_t *)"PAUSED", Yellow, Black);
+        
+        // Pausa Musica
+        music_pause_resume(1); // 1 = Pausa
     }
 }
 
 void game_init(void) {
     int i, j;
-    NVIC_SetPriority(RIT_IRQn, 1);
-    NVIC_SetPriority(TIMER0_IRQn, 2);
+    
+    // NOTA: Le NVIC_SetPriority le abbiamo spostate nel main per sicurezza!
+    
     for (i = 0; i < Field_ROWS; i++) {
         for (j = 0; j < Field_COLS; j++) board[i][j] = T_Black;
     }
     score = 0;
     lines_cleared_total = 0;
+    
+    // Il gioco inizia in PAUSA
     status = GAME_PAUSED;
-		// Pulizia Board e Board Powers
+    
+    // Pulizia
     for (i = 0; i < Field_ROWS; i++) {
         for (j = 0; j < Field_COLS; j++) {
             board[i][j] = T_Black;
@@ -475,7 +496,13 @@ void game_init(void) {
     LCD_Clear(T_Black);
     draw_board();
     spawn_block();
-}
+    
+    // --- GESTIONE MUSICA START ---
+    // 1. Inizializziamo e facciamo partire la canzone (reset indice)
+    music_start();
+    // 2. Ma siccome il gioco parte in PAUSA, mettiamo subito in pausa anche la musica
+    music_pause_resume(1); // 1 = Pausa
+}	
 
 void game_update(void) {
     Block temp;

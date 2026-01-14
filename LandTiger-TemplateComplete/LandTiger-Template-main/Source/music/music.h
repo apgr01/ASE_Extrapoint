@@ -3,7 +3,7 @@
 
 #include "LPC17xx.h"
 
-// --- DEFINIZIONI BASE ---
+// --- CONFIGURAZIONE TEMPO ---
 #define SPEEDUP 1.6
 #define TIMERSCALER 1
 #define SECOND 0x17D7840 * TIMERSCALER
@@ -14,8 +14,8 @@ typedef char BOOL;
 
 // --- STRUTTURA NOTA ---
 typedef struct {
-    uint32_t freq;      // Valore del registro match per la frequenza
-    uint32_t duration;  // Durata in tick del timer
+    uint32_t freq;      
+    uint32_t duration;  
 } NOTE;
 
 // --- DURATE ---
@@ -27,22 +27,26 @@ typedef enum note_durations {
     time_semiminima   = (unsigned int)(SECOND * SPEEDUP / 4.0f + 0.5),
     time_minima       = (unsigned int)(SECOND * SPEEDUP / 2.0f + 0.5),
     time_semibreve    = (unsigned int)(SECOND * SPEEDUP + 0.5),
-    time_pause        = 0 // Frequenza per la pausa
+    time_pause        = 0
 } NOTE_DURATION;
 
-// --- FREQUENZE (Valori K per Timer) ---
-// Se mancano nel tuo file originale, aggiungi queste per la scala centrale
+// --- FREQUENZE (Abbassa Tonalità) ---
+// Ho raddoppiato di nuovo i valori precedenti.
+// Valori più alti = Timer più lento = Suono più grave.
 enum frequencies {
     pause = 0,
-    c4 = 2120, d4 = 1890, e4 = 1684, f4 = 1592, g4 = 1417, a4 = 1263, b4 = 1125,
-    c5 = 1062, d5 = 945,  e5 = 842,  f5 = 796,  g5 = 709,  a5 = 632,  b5 = 563
+    g4 = 5668, g4s = 5348, a4 = 5052, b4 = 4500,
+    c5 = 4248, d5 = 3780,  e5 = 3368, f5 = 3184, g5 = 2836, a5 = 2528
 };
 
-// --- FUNZIONI ESPORTATE ---
+// --- FUNZIONI ---
 void music_init(void);
 void music_start(void);
 void music_stop(void);
 void music_pause_resume(int pause_flag);
-void music_player_tick(void); // Da chiamare nell'IRQ del Timer1
+void music_player_tick(void); 
+
+// Variabile globale per il volume
+extern volatile int currentVolume;
 
 #endif

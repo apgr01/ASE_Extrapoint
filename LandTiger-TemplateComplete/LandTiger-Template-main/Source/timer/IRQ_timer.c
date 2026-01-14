@@ -1,153 +1,59 @@
-/*********************************************************************************************************
-**--------------File Info---------------------------------------------------------------------------------
-** File name:           IRQ_timer.c
-** Last modified Date:  2014-09-25
-** Last Version:        V1.00
-** Descriptions:        functions to manage T0 and T1 interrupts
-** Correlated files:    timer.h
-**--------------------------------------------------------------------------------------------------------
-*********************************************************************************************************/
 #include "LPC17xx.h"
 #include "timer.h"
-#include "../led/led.h"
-#include "../utils.h"
 #include "../game.h"
+#include "../music/music.h"
+// Includiamo l'ADC se vuoi controllare il volume col potenziometro (opzionale)
+#include "../adc/adc.h" 
 
-/******************************************************************************
-** Function name:		Timer0_IRQHandler
-**
-** Descriptions:		Timer/Counter 0 interrupt handler
-**
-** parameters:			None
-** Returned value:		None
-**
-******************************************************************************/
+extern unsigned short AD_current; // Variabile del potenziometro
 
+// TIMER 0: Gioco
 void TIMER0_IRQHandler (void)
 {
-	if(LPC_TIM0->IR & 1) 			 // MR0
-	{ 
-		// your code
-		// Update del gioco
-    game_update();
-		LPC_TIM0->IR = 1;				 //clear interrupt flag
-	}
-	else if(LPC_TIM0->IR & 2){ // MR1
-		// your code	
-		LPC_TIM0->IR = 2;				 // clear interrupt flag 
-	}
-	else if(LPC_TIM0->IR & 4){ // MR2
-		// your code	
-		LPC_TIM0->IR = 4;				 // clear interrupt flag 
-	}
-	else if(LPC_TIM0->IR & 8){ // MR3
-		// your code	
-		LPC_TIM0->IR = 8;				 // clear interrupt flag 
-	}
-	
-  return;
+    if(LPC_TIM0->IR & 1) { 
+        game_update();
+        LPC_TIM0->IR = 1;
+    }
 }
 
-/******************************************************************************
-** Function name:		Timer1_IRQHandler
-**
-** Descriptions:		Timer/Counter 1 interrupt handler
-**
-** parameters:			None
-** Returned value:		None
-**
-******************************************************************************/
+// TIMER 1: Durata Musica
 void TIMER1_IRQHandler (void)
 {
-	if(LPC_TIM1->IR & 1) 	  	 // MR0
-	{ 
-		// your code	
-		LPC_TIM1->IR = 1;				 //clear interrupt flag
-	}
-	else if(LPC_TIM1->IR & 2){ // MR1
-		// your code	
-		LPC_TIM1->IR = 2;				 // clear interrupt flag 
-	}
-	else if(LPC_TIM1->IR & 4){ // MR2
-		// your code	
-		LPC_TIM1->IR = 4;				 // clear interrupt flag 
-	}
-	else if(LPC_TIM1->IR & 8){ // MR3
-		// your code	
-		LPC_TIM1->IR = 8;				 // clear interrupt flag 
-	} 
-
-	return;
+    if(LPC_TIM1->IR & 1) { 
+        music_player_tick(); 
+        LPC_TIM1->IR = 1;
+    }
 }
 
-/******************************************************************************
-** Function name:		Timer2_IRQHandler
-**
-** Descriptions:		Timer/Counter 2 interrupt handler
-**
-** parameters:			None
-** Returned value:		None
-**
-******************************************************************************/
+// TIMER 2: Speaker Audio (DAC)
 void TIMER2_IRQHandler (void)
 {
-	if(LPC_TIM2->IR & 1) 	   	 // MR0
-	{ 
-		// your code	
-		LPC_TIM2->IR = 1;				 //clear interrupt flag
-	}
-	else if(LPC_TIM2->IR & 2){ // MR1
-		// your code	
-		LPC_TIM2->IR = 2;				 // clear interrupt flag 
-	}	
-	else if(LPC_TIM2->IR & 4){ // MR2
-		// your code	
-		LPC_TIM2->IR = 4;				 // clear interrupt flag 
-	}
-	else if(LPC_TIM2->IR & 8){ // MR3
-		// your code	
-		LPC_TIM2->IR = 8;				 // clear interrupt flag 
-	} 
-	
-  return;
+    if(LPC_TIM2->IR & 1) { // MR0
+        static int speaker_state = 0;
+        
+        // GESTIONE VOLUME
+        // Opzione A: Volume fisso (definito in music.c come currentVolume = 200)
+        int volume_to_use = currentVolume;
+        
+        /* Opzione B: Volume col Potenziometro? 
+           ATTENZIONE: Il potenziometro controlla già la velocità.
+           Se vuoi che controlli ANCHE il volume, de-commenta la riga sotto.
+           Nota: Gioco veloce = Volume alto.
+        */
+        // volume_to_use = (AD_current >> 2); // Scala 4096 -> 1024
+        
+        if (speaker_state == 0) {
+            // DACR: bit 6-15 contengono il valore (0-1023)
+            LPC_DAC->DACR = (volume_to_use << 6); 
+            speaker_state = 1;
+        } else {
+            // Mettiamo a 0 (Silenzio)
+            LPC_DAC->DACR = 0; 
+            speaker_state = 0;
+        }
+        
+        LPC_TIM2->IR = 1;
+    }
 }
 
-
-/******************************************************************************
-** Function name:		Timer3_IRQHandler
-**
-** Descriptions:		Timer/Counter 3 interrupt handler
-**
-** parameters:			None
-** Returned value:		None
-**
-******************************************************************************/
-void TIMER3_IRQHandler (void)
-{
-	if(LPC_TIM3->IR & 1) 		   // MR0
-	{ 
-		// your code	
-		LPC_TIM3->IR = 1;				 //clear interrupt flag
-	}
-	else if(LPC_TIM3->IR & 2){ // MR1
-		// your code	
-		LPC_TIM3->IR = 2;				 // clear interrupt flag 
-	}
-	else if(LPC_TIM3->IR & 4){ // MR2
-		// your code	
-		LPC_TIM3->IR = 4;				 // clear interrupt flag 
-	}
-	else if(LPC_TIM3->IR & 8){ // MR3
-		// your code	
-		LPC_TIM3->IR = 8;				 // clear interrupt flag 
-	} 
-	
-  return;
-}
-
-
-
-
-/******************************************************************************
-**                            End Of File
-******************************************************************************/
+void TIMER3_IRQHandler (void) { LPC_TIM3->IR = 1; }

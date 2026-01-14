@@ -1787,7 +1787,7 @@ typedef struct
 } LPC_EMAC_TypeDef;
 # 5 "Source/music\\music.h" 2
 
-// --- DEFINIZIONI BASE ---
+// --- CONFIGURAZIONE TEMPO ---
 
 
 
@@ -1798,8 +1798,8 @@ typedef char BOOL;
 
 // --- STRUTTURA NOTA ---
 typedef struct {
-    uint32_t freq; // Valore del registro match per la frequenza
-    uint32_t duration; // Durata in tick del timer
+    uint32_t freq;
+    uint32_t duration;
 } NOTE;
 
 // --- DURATE ---
@@ -1811,136 +1811,128 @@ typedef enum note_durations {
     time_semiminima = (unsigned int)(0x17D7840 * 1 * 1.6 / 4.0f + 0.5),
     time_minima = (unsigned int)(0x17D7840 * 1 * 1.6 / 2.0f + 0.5),
     time_semibreve = (unsigned int)(0x17D7840 * 1 * 1.6 + 0.5),
-    time_pause = 0 // Frequenza per la pausa
+    time_pause = 0
 } NOTE_DURATION;
 
-// --- FREQUENZE (Valori K per Timer) ---
-// Se mancano nel tuo file originale, aggiungi queste per la scala centrale
+// --- FREQUENZE (Abbassa Tonalità) ---
+// Ho raddoppiato di nuovo i valori precedenti.
+// Valori più alti = Timer più lento = Suono più grave.
 enum frequencies {
     pause = 0,
-    c4 = 2120, d4 = 1890, e4 = 1684, f4 = 1592, g4 = 1417, a4 = 1263, b4 = 1125,
-    c5 = 1062, d5 = 945, e5 = 842, f5 = 796, g5 = 709, a5 = 632, b5 = 563
+    g4 = 5668, g4s = 5348, a4 = 5052, b4 = 4500,
+    c5 = 4248, d5 = 3780, e5 = 3368, f5 = 3184, g5 = 2836, a5 = 2528
 };
 
-// --- FUNZIONI ESPORTATE ---
+// --- FUNZIONI ---
 void music_init(void);
 void music_start(void);
 void music_stop(void);
 void music_pause_resume(int pause_flag);
-void music_player_tick(void); // Da chiamare nell'IRQ del Timer1
+void music_player_tick(void);
+
+// Variabile globale per il volume
+extern volatile int currentVolume;
 # 2 "Source/music/music.c" 2
-# 1 "Source/music\\../timer/timer.h" 1
-# 14 "Source/music\\../timer/timer.h"
-//uint32_t init_timer ( uint8_t timer_num, uint32_t Prescaler, uint8_t MatchReg, uint8_t SRImatchReg, uint32_t TimerInterval )
-//extern uint32_t init_timer( uint8_t timer_num, uint32_t timerInterval );
-extern uint32_t init_timer( uint8_t timer_num, uint32_t Prescaler, uint8_t MatchReg, uint8_t SRImatchReg, uint32_t TimerInterval );
-extern void enable_timer( uint8_t timer_num );
-extern void disable_timer( uint8_t timer_num );
-extern void reset_timer( uint8_t timer_num );
-void toggle_timer( uint8_t timer_num );
-unsigned int get_timer_value(uint8_t timer_num);
-uint32_t is_timer_enabled ( uint8_t timer_num);
-void power_on_timer2();
-void power_on_timer3();
-float get_timer_value_in_sec(uint8_t timer_num);
-
-
-extern void TIMER0_IRQHandler (void);
-extern void TIMER1_IRQHandler (void);
-extern void TIMER2_IRQHandler (void);
-extern void TIMER3_IRQHandler (void);
-# 3 "Source/music/music.c" 2
-
 
 
 static int current_note_index = 0;
 static volatile int is_playing = 0;
-# 51 "Source/music/music.c"
-NOTE song_one_piece[] = {
-    // "Arittake no"
-    {g4, time_croma}, {g4, time_croma}, {g4, time_croma}, {g4, time_croma},
-    // "yume o"
-    {a4, time_croma}, {c5, time_semiminima},
-    // "kakiatsume"
-    {c5, time_croma}, {c5, time_croma}, {d5, time_croma}, {c5, time_croma}, {b4, time_croma}, {a4, time_croma}, {g4, time_semiminima},
-    {pause, time_croma},
 
-    // "sagashi mono"
-    {g4, time_croma}, {g4, time_croma}, {g4, time_croma}, {g4, time_croma},
-    // "sagashini"
-    {a4, time_croma}, {c5, time_semiminima},
-    // "yuku no sa"
-    {c5, time_croma}, {d5, time_croma}, {c5, time_croma}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima},
-    {pause, time_croma},
+// Volume (0 - 1023). Modifica qui se vuoi alzare/abbassare.
+volatile int currentVolume = 150;
 
-    // "ONE PIECE!"
-    {e5, time_semiminima}, {d5, time_semiminima}, {c5, time_minima},
-    {pause, time_semiminima}
+
+NOTE song_tetris[] = {
+    // ============ PARTE A (Melodia Principale) ============
+
+    // Battuta 1
+    {e5, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {c5, time_croma}, {b4, time_croma},
+    // Battuta 2
+    {a4, time_semiminima}, {a4, time_croma}, {c5, time_croma}, {e5, time_semiminima}, {d5, time_croma}, {c5, time_croma},
+    // Battuta 3
+    {b4, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {e5, time_semiminima},
+    // Battuta 4
+    {c5, time_semiminima}, {a4, time_semiminima}, {a4, time_semiminima}, {pause, time_semiminima},
+
+    // Ripetizione Parte A (Opzionale, ma comune nel gioco)
+    // Battuta 5
+    {e5, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {c5, time_croma}, {b4, time_croma},
+    // Battuta 6
+    {a4, time_semiminima}, {a4, time_croma}, {c5, time_croma}, {e5, time_semiminima}, {d5, time_croma}, {c5, time_croma},
+    // Battuta 7
+    {b4, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {e5, time_semiminima},
+    // Battuta 8
+    {c5, time_semiminima}, {a4, time_semiminima}, {a4, time_semiminima}, {pause, time_semiminima},
+
+    // ============ PARTE B (Ponte Alto) ============
+
+    // Battuta 9
+    {d5, time_minima}, {f5, time_croma}, {a5, time_semiminima}, {g5, time_croma}, {f5, time_croma},
+    // Battuta 10
+    {e5, time_semiminima}, {e5, time_croma}, {c5, time_croma}, {e5, time_semiminima}, {d5, time_croma}, {c5, time_croma},
+    // Battuta 11
+    {b4, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {e5, time_semiminima},
+    // Battuta 12
+    {c5, time_semiminima}, {a4, time_semiminima}, {a4, time_semiminima}, {pause, time_semiminima},
+
+    // Ripetizione Parte B
+    // Battuta 13
+    {d5, time_minima}, {f5, time_croma}, {a5, time_semiminima}, {g5, time_croma}, {f5, time_croma},
+    // Battuta 14
+    {e5, time_semiminima}, {e5, time_croma}, {c5, time_croma}, {e5, time_semiminima}, {d5, time_croma}, {c5, time_croma},
+    // Battuta 15
+    {b4, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {e5, time_semiminima},
+    // Battuta 16 (Finale Loop)
+    {c5, time_semiminima}, {a4, time_semiminima}, {a4, time_semiminima}, {pause, time_semiminima}
 };
 
 
 
+
 void playNote(NOTE note) {
-    // --- TIMER 2: FREQUENZA (SUONO) ---
     if (note.freq != pause) {
-        reset_timer(2);
-        // init_timer(TimerNum, Prescale, MatchReg, MatchOpt, MatchVal)
-        // MatchOpt = 3 significa: Interrupt (1) + Reset on Match (2)
-        init_timer(2, 0, 0, 3, note.freq);
-        enable_timer(2);
+        ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->MR0 = note.freq;
+        ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->TCR = 3;
+        ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->TCR = 1;
     } else {
-        // Se è una pausa, spegniamo il timer del suono
-        disable_timer(2);
-        reset_timer(2);
+        ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->TCR = 0;
     }
-
-    // --- TIMER 1: DURATA (METRONOMO) ---
-    reset_timer(1);
-    // Impostiamo la durata della nota
-    init_timer(1, 0, 0, 3, note.duration);
-    enable_timer(1);
-}
-
-BOOL isNotePlaying(void) {
-    return is_playing;
+    ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->MR0 = note.duration;
+    ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->TCR = 3;
+    ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->TCR = 1;
 }
 
 void music_init(void) {
+    // Configura P0.26 come AOUT (DAC)
+    ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL1 &= ~(3 << 20);
+    ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL1 |= (2 << 20);
     current_note_index = 0;
     is_playing = 0;
-    // Assicuriamoci che il PIN dello speaker (P0.26) sia Output
-    ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL1 &= ~(3 << 20); // GPIO
-    ((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00000) )->FIODIR |= (1 << 26); // Output
 }
 
 void music_start(void) {
-    // Abilitiamo gli interrupt dei Timer nel ((NVIC_Type *) ((0xE000E000UL) + 0x0100UL) ) (se non fatto in init_timer)
-    __NVIC_EnableIRQ(TIMER1_IRQn);
-    __NVIC_EnableIRQ(TIMER2_IRQn);
-
     current_note_index = 0;
     is_playing = 1;
-    playNote(song_one_piece[0]);
+    __NVIC_EnableIRQ(TIMER1_IRQn);
+    __NVIC_EnableIRQ(TIMER2_IRQn);
+    playNote(song_tetris[0]);
 }
 
 void music_stop(void) {
     is_playing = 0;
-    disable_timer(1);
-    disable_timer(2);
-    reset_timer(1);
-    reset_timer(2);
+    ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->TCR = 0;
+    ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->TCR = 0;
 }
 
 void music_pause_resume(int pause_flag) {
     if (pause_flag) {
-        disable_timer(1);
-        disable_timer(2);
+        ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->TCR &= ~1;
+        ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->TCR &= ~1;
     } else {
         if (is_playing) {
-            enable_timer(1);
-            // Riabilita il suono solo se NON eravamo in una pausa musicale
-            if (song_one_piece[current_note_index].freq != pause) {
-                enable_timer(2);
+            ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->TCR |= 1;
+            if (song_tetris[current_note_index].freq != pause) {
+                ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->TCR |= 1;
             }
         }
     }
@@ -1948,12 +1940,7 @@ void music_pause_resume(int pause_flag) {
 
 void music_player_tick(void) {
     if (!is_playing) return;
-
     current_note_index++;
-
-    if (current_note_index >= (sizeof(song_one_piece) / sizeof(NOTE))) {
-        current_note_index = 0; // Loop infinito
-    }
-
-    playNote(song_one_piece[current_note_index]);
+    if (current_note_index >= (sizeof(song_tetris) / sizeof(NOTE))) current_note_index = 0;
+    playNote(song_tetris[current_note_index]);
 }
