@@ -1780,14 +1780,12 @@ typedef struct
 # 26 "Source/system_LPC17xx.c" 2
 # 389 "Source/system_LPC17xx.c"
 uint32_t SystemFrequency = ( 4000000UL);
-
-uint8_t ScaleFlag = 0;
 # 403 "Source/system_LPC17xx.c"
 void SystemInit (void)
 {
 
- uint32_t i = 0;
- uint32_t N = 100000;
+
+
 
 
   ((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->SCS = 0x00000020;
@@ -1873,16 +1871,5 @@ void SystemInit (void)
 
 
   ((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->FLASHCFG = (((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->FLASHCFG & ~0x0000F000) | 0x00004000;
-
-
-
-
-
-
- ScaleFlag = 1;
-
- for (; i < N; i++) __asm("NOP");
-
- ScaleFlag = 0;
-
+# 505 "Source/system_LPC17xx.c"
 }

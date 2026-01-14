@@ -1,315 +1,14 @@
-# 1 "Source/sample.c"
+# 1 "Source/music/music.c"
 # 1 "<built-in>" 1
 # 1 "<built-in>" 3
 # 404 "<built-in>" 3
 # 1 "<command line>" 1
 # 1 "<built-in>" 2
-# 1 "Source/sample.c" 2
-# 16 "Source/sample.c"
-# 1 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 1 3
-# 53 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-    typedef unsigned int size_t;
-# 68 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-    typedef __builtin_va_list __va_list;
-# 87 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-typedef struct __fpos_t_struct {
-    unsigned long long int __pos;
+# 1 "Source/music/music.c" 2
+# 1 "Source/music\\music.h" 1
 
 
 
-
-
-    struct {
-        unsigned int __state1, __state2;
-    } __mbstate;
-} fpos_t;
-# 108 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-typedef struct __FILE FILE;
-# 119 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-struct __FILE {
-    union {
-        long __FILE_alignment;
-
-
-
-        char __FILE_size[84];
-
-    } __FILE_opaque;
-};
-# 138 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern FILE __stdin, __stdout, __stderr;
-extern FILE *__aeabi_stdin, *__aeabi_stdout, *__aeabi_stderr;
-# 224 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int remove(const char * ) __attribute__((__nonnull__(1)));
-
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) int rename(const char * , const char * ) __attribute__((__nonnull__(1,2)));
-# 243 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) FILE *tmpfile(void);
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) char *tmpnam(char * );
-# 265 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int fclose(FILE * ) __attribute__((__nonnull__(1)));
-# 275 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int fflush(FILE * );
-# 285 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) FILE *fopen(const char * __restrict ,
-                           const char * __restrict ) __attribute__((__nonnull__(1,2)));
-# 329 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) FILE *freopen(const char * __restrict ,
-                    const char * __restrict ,
-                    FILE * __restrict ) __attribute__((__nonnull__(2,3)));
-# 342 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) void setbuf(FILE * __restrict ,
-                    char * __restrict ) __attribute__((__nonnull__(1)));
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) int setvbuf(FILE * __restrict ,
-                   char * __restrict ,
-                   int , size_t ) __attribute__((__nonnull__(1)));
-# 370 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-#pragma __printf_args
-extern __attribute__((__nothrow__)) int fprintf(FILE * __restrict ,
-                    const char * __restrict , ...) __attribute__((__nonnull__(1,2)));
-# 393 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-#pragma __printf_args
-extern __attribute__((__nothrow__)) int _fprintf(FILE * __restrict ,
-                     const char * __restrict , ...) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-#pragma __printf_args
-extern __attribute__((__nothrow__)) int printf(const char * __restrict , ...) __attribute__((__nonnull__(1)));
-
-
-
-
-
-
-#pragma __printf_args
-extern __attribute__((__nothrow__)) int _printf(const char * __restrict , ...) __attribute__((__nonnull__(1)));
-
-
-
-
-
-#pragma __printf_args
-extern __attribute__((__nothrow__)) int sprintf(char * __restrict , const char * __restrict , ...) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-
-
-
-#pragma __printf_args
-extern __attribute__((__nothrow__)) int _sprintf(char * __restrict , const char * __restrict , ...) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-
-#pragma __printf_args
-extern __attribute__((__nothrow__)) int __ARM_snprintf(char * __restrict , size_t ,
-                     const char * __restrict , ...) __attribute__((__nonnull__(3)));
-# 460 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-#pragma __printf_args
-extern __attribute__((__nothrow__)) int _snprintf(char * __restrict , size_t ,
-                      const char * __restrict , ...) __attribute__((__nonnull__(3)));
-
-
-
-
-
-#pragma __scanf_args
-extern __attribute__((__nothrow__)) int fscanf(FILE * __restrict ,
-                    const char * __restrict , ...) __attribute__((__nonnull__(1,2)));
-# 503 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-#pragma __scanf_args
-extern __attribute__((__nothrow__)) int _fscanf(FILE * __restrict ,
-                     const char * __restrict , ...) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-#pragma __scanf_args
-extern __attribute__((__nothrow__)) int scanf(const char * __restrict , ...) __attribute__((__nonnull__(1)));
-
-
-
-
-
-
-
-
-#pragma __scanf_args
-extern __attribute__((__nothrow__)) int _scanf(const char * __restrict , ...) __attribute__((__nonnull__(1)));
-
-
-
-
-
-#pragma __scanf_args
-extern __attribute__((__nothrow__)) int sscanf(const char * __restrict ,
-                    const char * __restrict , ...) __attribute__((__nonnull__(1,2)));
-# 541 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-#pragma __scanf_args
-extern __attribute__((__nothrow__)) int _sscanf(const char * __restrict ,
-                     const char * __restrict , ...) __attribute__((__nonnull__(1,2)));
-# 555 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int _vfscanf(FILE * __restrict , const char * __restrict , __va_list) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) int _vscanf(const char * __restrict , __va_list) __attribute__((__nonnull__(1)));
-extern __attribute__((__nothrow__)) int _vsscanf(const char * __restrict , const char * __restrict , __va_list) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) int __ARM_vsscanf(const char * __restrict , const char * __restrict , __va_list) __attribute__((__nonnull__(1,2)));
-
-extern __attribute__((__nothrow__)) int vprintf(const char * __restrict , __va_list ) __attribute__((__nonnull__(1)));
-
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) int _vprintf(const char * __restrict , __va_list ) __attribute__((__nonnull__(1)));
-
-
-
-
-
-extern __attribute__((__nothrow__)) int vfprintf(FILE * __restrict ,
-                    const char * __restrict , __va_list ) __attribute__((__nonnull__(1,2)));
-# 584 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int vsprintf(char * __restrict ,
-                     const char * __restrict , __va_list ) __attribute__((__nonnull__(1,2)));
-# 594 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int __ARM_vsnprintf(char * __restrict , size_t ,
-                     const char * __restrict , __va_list ) __attribute__((__nonnull__(3)));
-# 609 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int _vsprintf(char * __restrict ,
-                      const char * __restrict , __va_list ) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-extern __attribute__((__nothrow__)) int _vfprintf(FILE * __restrict ,
-                     const char * __restrict , __va_list ) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-extern __attribute__((__nothrow__)) int _vsnprintf(char * __restrict , size_t ,
-                      const char * __restrict , __va_list ) __attribute__((__nonnull__(3)));
-# 635 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-#pragma __printf_args
-extern __attribute__((__nothrow__)) int __ARM_asprintf(char ** , const char * __restrict , ...) __attribute__((__nonnull__(2)));
-extern __attribute__((__nothrow__)) int __ARM_vasprintf(char ** , const char * __restrict , __va_list ) __attribute__((__nonnull__(2)));
-# 649 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int fgetc(FILE * ) __attribute__((__nonnull__(1)));
-# 659 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) char *fgets(char * __restrict , int ,
-                    FILE * __restrict ) __attribute__((__nonnull__(1,3)));
-# 673 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int fputc(int , FILE * ) __attribute__((__nonnull__(2)));
-# 683 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int fputs(const char * __restrict , FILE * __restrict ) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) int getc(FILE * ) __attribute__((__nonnull__(1)));
-# 704 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-    extern __attribute__((__nothrow__)) int (getchar)(void);
-# 713 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) char *gets(char * ) __attribute__((__nonnull__(1)));
-# 725 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int putc(int , FILE * ) __attribute__((__nonnull__(2)));
-# 737 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-    extern __attribute__((__nothrow__)) int (putchar)(int );
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) int puts(const char * ) __attribute__((__nonnull__(1)));
-
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) int ungetc(int , FILE * ) __attribute__((__nonnull__(2)));
-# 778 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) size_t fread(void * __restrict ,
-                    size_t , size_t , FILE * __restrict ) __attribute__((__nonnull__(1,4)));
-# 794 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) size_t __fread_bytes_avail(void * __restrict ,
-                    size_t , FILE * __restrict ) __attribute__((__nonnull__(1,3)));
-# 810 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) size_t fwrite(const void * __restrict ,
-                    size_t , size_t , FILE * __restrict ) __attribute__((__nonnull__(1,4)));
-# 822 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int fgetpos(FILE * __restrict , fpos_t * __restrict ) __attribute__((__nonnull__(1,2)));
-# 833 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int fseek(FILE * , long int , int ) __attribute__((__nonnull__(1)));
-# 850 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int fsetpos(FILE * __restrict , const fpos_t * __restrict ) __attribute__((__nonnull__(1,2)));
-# 863 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) long int ftell(FILE * ) __attribute__((__nonnull__(1)));
-# 877 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) void rewind(FILE * ) __attribute__((__nonnull__(1)));
-# 886 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) void clearerr(FILE * ) __attribute__((__nonnull__(1)));
-
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) int feof(FILE * ) __attribute__((__nonnull__(1)));
-
-
-
-
-extern __attribute__((__nothrow__)) int ferror(FILE * ) __attribute__((__nonnull__(1)));
-
-
-
-
-extern __attribute__((__nothrow__)) void perror(const char * );
-# 917 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdio.h" 3
-extern __attribute__((__nothrow__)) int _fisatty(FILE * ) __attribute__((__nonnull__(1)));
-
-
-
-extern __attribute__((__nothrow__)) void __use_no_semihosting_swi(void);
-extern __attribute__((__nothrow__)) void __use_no_semihosting(void);
-# 17 "Source/sample.c" 2
 # 1 "C:/Users/aproi/AppData/Local/Arm/Packs/Keil/LPC1700_DFP/2.7.2/Device/Include\\LPC17xx.h" 1
 # 41 "C:/Users/aproi/AppData/Local/Arm/Packs/Keil/LPC1700_DFP/2.7.2/Device/Include\\LPC17xx.h"
 typedef enum IRQn
@@ -2086,289 +1785,7 @@ typedef struct
        uint32_t RESERVED8;
   volatile uint32_t Module_ID;
 } LPC_EMAC_TypeDef;
-# 18 "Source/sample.c" 2
-# 1 "Source\\led/led.h" 1
-# 12 "Source\\led/led.h"
-void LED_init(void);
-void LED_deinit(void);
-
-
-void LED_On (unsigned int num);
-void LED_Off (unsigned int num);
-void LED_Out(unsigned int value);
-void LED_Out_reverse(unsigned int value);
-void LED_OnAll(void);
-void LED_OffAll(void);
-void LED_Out_Range(unsigned int value, unsigned char from_led_num, unsigned char to_led_num);
-# 19 "Source/sample.c" 2
-# 1 "Source\\button_EXINT/button.h" 1
-void BUTTON_init(void);
-
-void EINT0_IRQHandler(void);
-void EINT1_IRQHandler(void);
-void EINT2_IRQHandler(void);
-# 20 "Source/sample.c" 2
-# 1 "Source\\timer/timer.h" 1
-# 14 "Source\\timer/timer.h"
-//uint32_t init_timer ( uint8_t timer_num, uint32_t Prescaler, uint8_t MatchReg, uint8_t SRImatchReg, uint32_t TimerInterval )
-//extern uint32_t init_timer( uint8_t timer_num, uint32_t timerInterval );
-extern uint32_t init_timer( uint8_t timer_num, uint32_t Prescaler, uint8_t MatchReg, uint8_t SRImatchReg, uint32_t TimerInterval );
-extern void enable_timer( uint8_t timer_num );
-extern void disable_timer( uint8_t timer_num );
-extern void reset_timer( uint8_t timer_num );
-void toggle_timer( uint8_t timer_num );
-unsigned int get_timer_value(uint8_t timer_num);
-uint32_t is_timer_enabled ( uint8_t timer_num);
-void power_on_timer2();
-void power_on_timer3();
-float get_timer_value_in_sec(uint8_t timer_num);
-
-
-extern void TIMER0_IRQHandler (void);
-extern void TIMER1_IRQHandler (void);
-extern void TIMER2_IRQHandler (void);
-extern void TIMER3_IRQHandler (void);
-# 21 "Source/sample.c" 2
-# 1 "Source\\RIT/RIT.h" 1
-# 17 "Source\\RIT/RIT.h"
-extern uint32_t init_RIT( uint32_t RITInterval );
-extern void enable_RIT( void );
-extern void disable_RIT( void );
-extern void reset_RIT( void );
-unsigned int get_RIT_value();
-
-extern void RIT_IRQHandler (void);
-# 22 "Source/sample.c" 2
-# 1 "Source\\joystick/joystick.h" 1
-# 12 "Source\\joystick/joystick.h"
-void joystick_init(void);
-# 23 "Source/sample.c" 2
-# 1 "Source\\sample.h" 1
-
-# 1 "Source\\led/led.h" 1
-# 12 "Source\\led/led.h"
-void LED_init(void);
-void LED_deinit(void);
-
-
-void LED_On (unsigned int num);
-void LED_Off (unsigned int num);
-void LED_Out(unsigned int value);
-void LED_Out_reverse(unsigned int value);
-void LED_OnAll(void);
-void LED_OffAll(void);
-void LED_Out_Range(unsigned int value, unsigned char from_led_num, unsigned char to_led_num);
-# 3 "Source\\sample.h" 2
-# 24 "Source/sample.c" 2
-# 1 "Source\\game.h" 1
-
-
-
-
-# 1 "Source\\GLCD/GLCD.h" 1
-# 90 "Source\\GLCD/GLCD.h"
-void LCD_Initialization(void);
-void LCD_Clear(uint16_t Color);
-uint16_t LCD_GetPoint(uint16_t Xpos,uint16_t Ypos);
-void LCD_SetPoint(uint16_t Xpos,uint16_t Ypos,uint16_t point);
-void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t color );
-void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
-void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor);
-# 6 "Source\\game.h" 2
-
-
-// Modifica questi valori per testare rapidamente
-# 24 "Source\\game.h"
-typedef enum {
-    GAME_OVER,
-    GAME_RUNNING,
-    GAME_PAUSED
-} GameStatus;
-
-// Nuovo Enum per i PowerUp
-typedef enum {
-    POWER_NONE = 0,
-    POWER_CLEAR, // Identificato dalla lettera 'C'
-    POWER_SLOW // Identificato dalla lettera 'S'
-} PowerUpType;
-
-typedef enum {
-    I_BLOCK, J_BLOCK, L_BLOCK, O_BLOCK, S_BLOCK, T_BLOCK, Z_BLOCK
-} BlockType;
-# 54 "Source\\game.h"
-typedef struct {
-    int row;
-    int col;
-} Point;
-
-typedef struct {
-    Point cells[4];
-    Point position;
-    uint16_t color;
-    BlockType type;
-    int rotation;
-} Block;
-
-
-extern uint16_t board[20][10];
-// Nuova matrice parallela per tracciare dove sono i powerup
-extern uint8_t board_powers[20][10];
-
-extern Block currentBlock;
-extern Block nextBlock;
-extern volatile GameStatus status;
-extern volatile int hard_drop_mode;
-extern int score;
-
-// Contatori per la logica extrapoints
-extern int total_lines_cleared;
-
-
-void game_init(void);
-void game_update(void);
-// Aggiungeremo queste funzioni dopo, per ora le dichiaro
-void apply_powerup(PowerUpType type, int row);
-void spawn_random_powerup(void);
-void apply_malus(void);
-# 25 "Source/sample.c" 2
-# 1 "Source\\adc/adc.h" 1
-# 1 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 1 3
-# 58 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) void *memcpy(void * __restrict ,
-                    const void * __restrict , size_t ) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) void *memmove(void * ,
-                    const void * , size_t ) __attribute__((__nonnull__(1,2)));
-# 77 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) char *strcpy(char * __restrict , const char * __restrict ) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) char *strncpy(char * __restrict , const char * __restrict , size_t ) __attribute__((__nonnull__(1,2)));
-# 93 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) char *strcat(char * __restrict , const char * __restrict ) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) char *strncat(char * __restrict , const char * __restrict , size_t ) __attribute__((__nonnull__(1,2)));
-# 117 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) int memcmp(const void * , const void * , size_t ) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) int strcmp(const char * , const char * ) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) int strncmp(const char * , const char * , size_t ) __attribute__((__nonnull__(1,2)));
-# 141 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) int strcasecmp(const char * , const char * ) __attribute__((__nonnull__(1,2)));
-
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) int strncasecmp(const char * , const char * , size_t ) __attribute__((__nonnull__(1,2)));
-# 158 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) int strcoll(const char * , const char * ) __attribute__((__nonnull__(1,2)));
-# 169 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) size_t strxfrm(char * __restrict , const char * __restrict , size_t ) __attribute__((__nonnull__(2)));
-# 193 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) void *memchr(const void * , int , size_t ) __attribute__((__nonnull__(1)));
-# 209 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) char *strchr(const char * , int ) __attribute__((__nonnull__(1)));
-# 218 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) size_t strcspn(const char * , const char * ) __attribute__((__nonnull__(1,2)));
-# 232 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) char *strpbrk(const char * , const char * ) __attribute__((__nonnull__(1,2)));
-# 247 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) char *strrchr(const char * , int ) __attribute__((__nonnull__(1)));
-# 257 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) size_t strspn(const char * , const char * ) __attribute__((__nonnull__(1,2)));
-# 270 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) char *strstr(const char * , const char * ) __attribute__((__nonnull__(1,2)));
-# 280 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) char *strtok(char * __restrict , const char * __restrict ) __attribute__((__nonnull__(2)));
-extern __attribute__((__nothrow__)) char *_strtok_r(char * , const char * , char ** ) __attribute__((__nonnull__(2,3)));
-# 321 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) void *memset(void * , int , size_t ) __attribute__((__nonnull__(1)));
-
-
-
-
-
-extern __attribute__((__nothrow__)) char *strerror(int );
-
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) size_t strlen(const char * ) __attribute__((__nonnull__(1)));
-
-
-
-
-
-extern __attribute__((__nothrow__)) size_t strnlen(const char * , size_t ) __attribute__((__nonnull__(1)));
-
-
-
-
-
-
-
-extern __attribute__((__nothrow__)) size_t strlcpy(char * , const char * , size_t ) __attribute__((__nonnull__(1,2)));
-# 369 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) size_t strlcat(char * , const char * , size_t ) __attribute__((__nonnull__(1,2)));
-# 395 "C:\\Users\\aproi\\AppData\\Local\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\string.h" 3
-extern __attribute__((__nothrow__)) void _membitcpybl(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitcpybb(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitcpyhl(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitcpyhb(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitcpywl(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitcpywb(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitmovebl(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitmovebb(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitmovehl(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitmovehb(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitmovewl(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-extern __attribute__((__nothrow__)) void _membitmovewb(void * , const void * , int , int , size_t ) __attribute__((__nonnull__(1,2)));
-# 2 "Source\\adc/adc.h" 2
-
-
-void ADC_init (void);
-void ADC_start_conversion (void);
-
-
-void ADC_IRQHandler(void);
-# 26 "Source/sample.c" 2
-# 1 "Source\\music/music.h" 1
-
-
-
-
+# 5 "Source/music\\music.h" 2
 
 // --- DEFINIZIONI BASE ---
 
@@ -2411,36 +1828,132 @@ void music_start(void);
 void music_stop(void);
 void music_pause_resume(int pause_flag);
 void music_player_tick(void); // Da chiamare nell'IRQ del Timer1
-# 27 "Source/sample.c" 2
-# 42 "Source/sample.c"
-int main(void) {
+# 2 "Source/music/music.c" 2
+# 1 "Source/music\\../timer/timer.h" 1
+# 14 "Source/music\\../timer/timer.h"
+//uint32_t init_timer ( uint8_t timer_num, uint32_t Prescaler, uint8_t MatchReg, uint8_t SRImatchReg, uint32_t TimerInterval )
+//extern uint32_t init_timer( uint8_t timer_num, uint32_t timerInterval );
+extern uint32_t init_timer( uint8_t timer_num, uint32_t Prescaler, uint8_t MatchReg, uint8_t SRImatchReg, uint32_t TimerInterval );
+extern void enable_timer( uint8_t timer_num );
+extern void disable_timer( uint8_t timer_num );
+extern void reset_timer( uint8_t timer_num );
+void toggle_timer( uint8_t timer_num );
+unsigned int get_timer_value(uint8_t timer_num);
+uint32_t is_timer_enabled ( uint8_t timer_num);
+void power_on_timer2();
+void power_on_timer3();
+float get_timer_value_in_sec(uint8_t timer_num);
 
 
-    SystemInit();
-    LCD_Initialization();
-    LCD_Clear(0x0000);
+extern void TIMER0_IRQHandler (void);
+extern void TIMER1_IRQHandler (void);
+extern void TIMER2_IRQHandler (void);
+extern void TIMER3_IRQHandler (void);
+# 3 "Source/music/music.c" 2
 
 
-    joystick_init();
-    BUTTON_init();
 
-  ADC_init();
-  music_init();
+static int current_note_index = 0;
+static volatile int is_playing = 0;
+# 51 "Source/music/music.c"
+NOTE song_one_piece[] = {
+    // "Arittake no"
+    {g4, time_croma}, {g4, time_croma}, {g4, time_croma}, {g4, time_croma},
+    // "yume o"
+    {a4, time_croma}, {c5, time_semiminima},
+    // "kakiatsume"
+    {c5, time_croma}, {c5, time_croma}, {d5, time_croma}, {c5, time_croma}, {b4, time_croma}, {a4, time_croma}, {g4, time_semiminima},
+    {pause, time_croma},
+
+    // "sagashi mono"
+    {g4, time_croma}, {g4, time_croma}, {g4, time_croma}, {g4, time_croma},
+    // "sagashini"
+    {a4, time_croma}, {c5, time_semiminima},
+    // "yuku no sa"
+    {c5, time_croma}, {d5, time_croma}, {c5, time_croma}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima},
+    {pause, time_croma},
+
+    // "ONE PIECE!"
+    {e5, time_semiminima}, {d5, time_semiminima}, {c5, time_minima},
+    {pause, time_semiminima}
+};
 
 
-    init_RIT(0x10625A0);
-    enable_RIT();
 
-
-    init_timer(0, 0, 0, 3, 0x00098968);
-    enable_timer(0);
-    __NVIC_EnableIRQ(TIMER0_IRQn);
-
-
-    game_init();
-
-
-    while (1) {
-        __asm("wfi"); // CPU in sleep, risvegliata dagli interrupt
+void playNote(NOTE note) {
+    // --- TIMER 2: FREQUENZA (SUONO) ---
+    if (note.freq != pause) {
+        reset_timer(2);
+        // init_timer(TimerNum, Prescale, MatchReg, MatchOpt, MatchVal)
+        // MatchOpt = 3 significa: Interrupt (1) + Reset on Match (2)
+        init_timer(2, 0, 0, 3, note.freq);
+        enable_timer(2);
+    } else {
+        // Se è una pausa, spegniamo il timer del suono
+        disable_timer(2);
+        reset_timer(2);
     }
+
+    // --- TIMER 1: DURATA (METRONOMO) ---
+    reset_timer(1);
+    // Impostiamo la durata della nota
+    init_timer(1, 0, 0, 3, note.duration);
+    enable_timer(1);
+}
+
+BOOL isNotePlaying(void) {
+    return is_playing;
+}
+
+void music_init(void) {
+    current_note_index = 0;
+    is_playing = 0;
+    // Assicuriamoci che il PIN dello speaker (P0.26) sia Output
+    ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL1 &= ~(3 << 20); // GPIO
+    ((LPC_GPIO_TypeDef *) ((0x2009C000UL) + 0x00000) )->FIODIR |= (1 << 26); // Output
+}
+
+void music_start(void) {
+    // Abilitiamo gli interrupt dei Timer nel ((NVIC_Type *) ((0xE000E000UL) + 0x0100UL) ) (se non fatto in init_timer)
+    __NVIC_EnableIRQ(TIMER1_IRQn);
+    __NVIC_EnableIRQ(TIMER2_IRQn);
+
+    current_note_index = 0;
+    is_playing = 1;
+    playNote(song_one_piece[0]);
+}
+
+void music_stop(void) {
+    is_playing = 0;
+    disable_timer(1);
+    disable_timer(2);
+    reset_timer(1);
+    reset_timer(2);
+}
+
+void music_pause_resume(int pause_flag) {
+    if (pause_flag) {
+        disable_timer(1);
+        disable_timer(2);
+    } else {
+        if (is_playing) {
+            enable_timer(1);
+            // Riabilita il suono solo se NON eravamo in una pausa musicale
+            if (song_one_piece[current_note_index].freq != pause) {
+                enable_timer(2);
+            }
+        }
+    }
+}
+
+void music_player_tick(void) {
+    if (!is_playing) return;
+
+    current_note_index++;
+
+    if (current_note_index >= (sizeof(song_one_piece) / sizeof(NOTE))) {
+        current_note_index = 0; // Loop infinito
+    }
+
+    playNote(song_one_piece[current_note_index]);
 }

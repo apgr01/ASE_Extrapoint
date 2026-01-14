@@ -1,9 +1,8 @@
-#ifndef ADC_H
-#define ADC_H
-#include "LPC17xx.h"
+#include <string.h>
 
-void ADC_init(void);
-void ADC_start_conversion(void);
-uint16_t ADC_read(void);
+/* lib_adc.c */
+void ADC_init (void);
+void ADC_start_conversion (void);
 
-#endif
+/* IRQ_adc.c */
+void ADC_IRQHandler(void);

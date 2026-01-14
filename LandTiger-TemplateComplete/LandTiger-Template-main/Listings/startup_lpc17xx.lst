@@ -41,26 +41,26 @@ ARM Macro Assembler    Page 1
    24 00000000         ;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
    25 00000000         ; </h>
    26 00000000         
-   27 00000000 00000200 
+   27 00000000 00001000 
                        Stack_Size
-                               EQU              0x00000200
+                               EQU              0x00001000
    28 00000000         
    29 00000000                 AREA             STACK, NOINIT, READWRITE, ALIGN
 =3
    30 00000000         Stack_Mem
                                SPACE            Stack_Size
-   31 00000200         __initial_sp
-   32 00000200         
-   33 00000200         
-   34 00000200         ; <h> Heap Configuration
-   35 00000200         ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
-   36 00000200         ; </h>
-   37 00000200         
-   38 00000200 00000000 
+   31 00001000         __initial_sp
+   32 00001000         
+   33 00001000         
+   34 00001000         ; <h> Heap Configuration
+   35 00001000         ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
+   36 00001000         ; </h>
+   37 00001000         
+   38 00001000 00001000 
                        Heap_Size
-                               EQU              0x00000000
-   39 00000200         
-   40 00000200                 AREA             HEAP, NOINIT, READWRITE, ALIGN=
+                               EQU              0x00001000
+   39 00001000         
+   40 00001000                 AREA             HEAP, NOINIT, READWRITE, ALIGN=
 3
    41 00000000         __heap_base
 
@@ -71,16 +71,16 @@ ARM Macro Assembler    Page 2
 
    42 00000000         Heap_Mem
                                SPACE            Heap_Size
-   43 00000000         __heap_limit
-   44 00000000         
-   45 00000000         
-   46 00000000                 PRESERVE8
-   47 00000000                 THUMB
-   48 00000000         
-   49 00000000         
-   50 00000000         ; Vector Table Mapped to Address 0 at Reset
-   51 00000000         
-   52 00000000                 AREA             RESET, DATA, READONLY
+   43 00001000         __heap_limit
+   44 00001000         
+   45 00001000         
+   46 00001000                 PRESERVE8
+   47 00001000                 THUMB
+   48 00001000         
+   49 00001000         
+   50 00001000         ; Vector Table Mapped to Address 0 at Reset
+   51 00001000         
+   52 00001000                 AREA             RESET, DATA, READONLY
    53 00000000                 EXPORT           __Vectors
    54 00000000         
    55 00000000 00000000 
@@ -407,8 +407,8 @@ ARM Macro Assembler    Page 7
   268 00000018         
   269 00000018 4803            LDR              R0, =  Heap_Mem
   270 0000001A 4904            LDR              R1, =(Stack_Mem + Stack_Size)
-  271 0000001C 4A02            LDR              R2, = (Heap_Mem +  Heap_Size)
-  272 0000001E 4B04            LDR              R3, = Stack_Mem
+  271 0000001C 4A04            LDR              R2, = (Heap_Mem +  Heap_Size)
+  272 0000001E 4B05            LDR              R3, = Stack_Mem
   273 00000020 4770            BX               LR
   274 00000022         
   275 00000022 00 00           ALIGN
@@ -419,16 +419,17 @@ ARM Macro Assembler    Page 7
   280 00000024                 END
               00000000 
               00000000 
-              00000200 
+              00001000 
+              00001000 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M3 --depe
 nd=.\objects\startup_lpc17xx.d -o.\objects\startup_lpc17xx.o -I.\Source\button_
 EXINT -I.\Source\CMSIS_core -I.\Source\joystick -I.\Source\led -I.\Source\RIT -
-I.\Source\timer -I.\Source -I.\RTE\_SW_Debug -IC:\Users\aproi\AppData\Local\Arm
-\Packs\ARM\CMSIS\6.2.0\CMSIS\Core\Include -IC:\Users\aproi\AppData\Local\Arm\Pa
-cks\Keil\LPC1700_DFP\2.7.2\Device\Include --predefine="__EVAL SETA 1" --predefi
-ne="__UVISION_VERSION SETA 543" --predefine="LPC175x_6x SETA 1" --predefine="_R
-TE_ SETA 1" --list=.\listings\startup_lpc17xx.lst Source\startup_LPC17xx.s
+I.\Source\timer -I.\Source -I.\RTE\_LandTiger_LPC1768__release_ -IC:\Users\apro
+i\AppData\Local\Arm\Packs\ARM\CMSIS\6.2.0\CMSIS\Core\Include -IC:\Users\aproi\A
+ppData\Local\Arm\Packs\Keil\LPC1700_DFP\2.7.2\Device\Include --predefine="__UVI
+SION_VERSION SETA 543" --predefine="LPC175x_6x SETA 1" --predefine="_RTE_ SETA 
+1" --list=.\listings\startup_lpc17xx.lst Source\startup_LPC17xx.s
 
 
 
@@ -452,7 +453,7 @@ Symbol: Stack_Mem
       At line 270 in file Source\startup_LPC17xx.s
       At line 272 in file Source\startup_LPC17xx.s
 
-__initial_sp 00000200
+__initial_sp 00001000
 
 Symbol: __initial_sp
    Definitions
@@ -492,7 +493,7 @@ Symbol: __heap_base
    Uses
       None
 Comment: __heap_base unused
-__heap_limit 00000000
+__heap_limit 00001000
 
 Symbol: __heap_limit
    Definitions
@@ -1031,7 +1032,7 @@ Comment: __user_initial_stackheap used once
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Absolute symbols
 
-Heap_Size 00000000
+Heap_Size 00001000
 
 Symbol: Heap_Size
    Definitions
@@ -1040,7 +1041,7 @@ Symbol: Heap_Size
       At line 42 in file Source\startup_LPC17xx.s
       At line 271 in file Source\startup_LPC17xx.s
 
-Stack_Size 00000200
+Stack_Size 00001000
 
 Symbol: Stack_Size
    Definitions
@@ -1073,4 +1074,4 @@ Symbol: __use_two_region_memory
       None
 Comment: __use_two_region_memory unused
 2 symbols
-403 symbols in table
+402 symbols in table

@@ -22,7 +22,8 @@
 #include "joystick/joystick.h"
 #include "sample.h"
 #include "game.h"
-#include "ADC/adc.h"
+#include "adc/adc.h"
+#include "music/music.h"
 
 #ifdef SIMULATOR
 extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emulator to find the symbol (can be placed also inside system_LPC17xx.h but since it is RO, it needs more work)
@@ -50,6 +51,7 @@ int main(void) {
     BUTTON_init();
 	
 		ADC_init();
+		music_init();
 
     /* RIT: gestione input (debounce + joystick) */
     init_RIT(0x10625A0);

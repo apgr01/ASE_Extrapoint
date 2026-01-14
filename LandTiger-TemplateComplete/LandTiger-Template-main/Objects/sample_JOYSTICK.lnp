@@ -19,7 +19,9 @@
 ".\objects\glcd.o"
 ".\objects\hzlib.o"
 ".\objects\touchpanel.o"
-".\objects\adc.o"
+".\objects\irq_adc.o"
+".\objects\lib_adc.o"
+".\objects\music.o"
 --strict --scatter ".\Objects\sample_JOYSTICK.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

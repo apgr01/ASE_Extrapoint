@@ -2,6 +2,7 @@
 #include "LPC17xx.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "../adc/adc.h"
 
 /* --- COSTANTI INTERFACCIA --- */
 #define UI_COL_X             160
@@ -10,7 +11,6 @@
 #define Y_HISCORE            140
 #define Y_STATUS             265
 #define DROP_DELAY_NORMAL    40
-#define DROP_DELAY_FAST      2
 
 /* --- VARIABILI GLOBALI --- */
 uint16_t board[Field_ROWS][Field_COLS];
@@ -22,6 +22,10 @@ volatile GameStatus status = GAME_PAUSED;
 int score = 0;
 int lines_cleared_total = 0;
 volatile int highScore = 0;
+volatile int slow_powerup_timer = 0;
+
+// Potenziometro
+extern unsigned short AD_current;
 
 /* Controllo flusso */
 volatile int hard_drop_mode = 0;
@@ -59,7 +63,7 @@ void draw_grid_cell(int row, int col, uint16_t color) {
     int x0 = BOARD_X_OFFSET + (col * BLOCK_SIZE);
     int y0 = BOARD_Y_OFFSET + (row * BLOCK_SIZE);
     
-    // 1. Disegna il quadrato colorato (invariato)
+    // 1. Disegna il quadrato colorato
     for (i = 0; i < BLOCK_SIZE; i++) {
         for (j = 0; j < BLOCK_SIZE; j++) {
             uint16_t p_color = (i == BLOCK_SIZE - 1 || j == BLOCK_SIZE - 1) ? T_Black : color;
@@ -67,16 +71,11 @@ void draw_grid_cell(int row, int col, uint16_t color) {
         }
     }
 
-    // 2. Overlay Lettera PowerUp (Modificato)
+    // 2. Overlay Lettera PowerUp
     if (color != T_Black && board_powers[row][col] != POWER_NONE) {
         char letter[2] = " ";
         if (board_powers[row][col] == POWER_CLEAR) letter[0] = 'C';
         else if (board_powers[row][col] == POWER_SLOW) letter[0] = 'S';
-        
-        // CORREZIONE POSIZIONE E COLORE
-        // X: (15 - 8) / 2 = 3.5 -> Arrotondiamo a +4 per centrare orizzontalmente
-        // Y: Mettiamo a 0. Il font è alto 16px, il blocco 15px. 
-        // Se mettiamo +4 sfora di 5px. A 0 sfora solo di 1px in basso (quasi invisibile).
         
         GUI_Text(x0 + 4, y0, (uint8_t *)letter, T_Black, color);
     }
@@ -291,10 +290,6 @@ int check_collision(Block b) {
     return 0;
 }
 
-// Variabili globali per l'effetto Slow (le definiremo meglio dopo, ma servono qui)
-volatile int slow_down_active = 0; 
-volatile int slow_down_timer = 0; 
-
 void check_lines(void) {
     int r, c, k, full, lines_found = 0;
     
@@ -349,16 +344,17 @@ void check_lines(void) {
          spawn_random_powerup();
     }
 
-    // --- STEP 3: Attivazione Effetti PowerUP ---
+// --- STEP 3: Attivazione Effetti PowerUP ---
     // Avvengono DOPO che la riga trigger è sparita
     if (trigger_clear_half) {
         apply_clear_half(); // Rimuove metà delle righe RESTANTI
     }
     
     if (trigger_slow) {
-        slow_down_active = 1;
-        slow_down_timer = 15; // Reset timer a 15s
-        // Qui opzionalmente potresti mostrare un messaggio "SLOW!"
+        // CORREZIONE QUI:
+        // Usiamo la variabile letta da game_update
+        // 15 secondi * 40Hz = 600 ticks
+        slow_powerup_timer = 600; 
     }
 
     // --- STEP 4: Applicazione Malus ---
@@ -484,6 +480,7 @@ void game_init(void) {
 void game_update(void) {
     Block temp;
     int threshold;
+    int base_delay;
 
     if (restart_requested) {
         restart_requested = 0;
@@ -492,7 +489,22 @@ void game_update(void) {
     }
     if (status != GAME_RUNNING) return;
 
+    // 1. Avvia conversione ADC (aggiorniamo sempre il valore hardware)
+    ADC_start_conversion();
+
+// 2. LOGICA VELOCITÀ (Priorità PowerUp > Potenziometro)
+    if (slow_powerup_timer > 0) {
+        // --- POWERUP ATTIVO ---
+        base_delay = 40; // Forza velocità minima (1 blocco/sec)
+        slow_powerup_timer--; // Decrementa il tempo rimanente
+    } else {
+        // --- NORMALE (CONTROLLO POTENZIOMETRO) ---
+        base_delay = 40 - ((AD_current * 32) / 0xFFF);
+        if (base_delay < 8) base_delay = 8; 
+    }
+
     if (hard_drop_mode) {
+        // ... (Logica Hard Drop invariata)
         draw_tetromino(currentBlock, T_Black);
         while (!check_collision(currentBlock)) currentBlock.position.row++;
         currentBlock.position.row--;
@@ -500,9 +512,11 @@ void game_update(void) {
         lock_block();
         return;
     }
-
+    
+    // ... (Gestione Joystick Left/Right/Up invariata) ...
     if (J_up) { rotate_block(); J_up = 0; }
     if (J_left || J_right) {
+        // ... (codice movimento laterale)
         temp = currentBlock;
         if (J_left)  temp.position.col--;
         if (J_right) temp.position.col++;
@@ -515,9 +529,20 @@ void game_update(void) {
     }
 
     drop_ticks++;
-    threshold = (J_down) ? DROP_DELAY_FAST : DROP_DELAY_NORMAL;
+
+    // 3. Gestione Soft Drop (Joystick Down)
+    // La specifica dice: "doubles the current falling speed"
+    // Se siamo rallentati (base_delay = 40), premendo giù andiamo a 20 (2 blocchi/sec).
+    if (J_down) {
+        threshold = base_delay / 2;
+        if (threshold < 1) threshold = 1;
+    } else {
+        threshold = base_delay;
+    }
+
     if (drop_ticks >= threshold) {
         drop_ticks = 0;
+        // ... (Logica caduta blocco invariata)
         temp = currentBlock;
         temp.position.row++;
         if (check_collision(temp)) {

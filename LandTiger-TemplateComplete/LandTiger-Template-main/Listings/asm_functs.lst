@@ -951,11 +951,11 @@ ARM Macro Assembler    Page 15
 Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M3 --depe
 nd=.\objects\asm_functs.d -o.\objects\asm_functs.o -I.\Source\button_EXINT -I.\
 Source\CMSIS_core -I.\Source\joystick -I.\Source\led -I.\Source\RIT -I.\Source\
-timer -I.\Source -I.\RTE\_SW_Debug -IC:\Users\aproi\AppData\Local\Arm\Packs\ARM
-\CMSIS\6.2.0\CMSIS\Core\Include -IC:\Users\aproi\AppData\Local\Arm\Packs\Keil\L
-PC1700_DFP\2.7.2\Device\Include --predefine="__EVAL SETA 1" --predefine="__UVIS
-ION_VERSION SETA 543" --predefine="LPC175x_6x SETA 1" --predefine="_RTE_ SETA 1
-" --list=.\listings\asm_functs.lst Source\ASM\ASM_functs.s
+timer -I.\Source -I.\RTE\_LandTiger_LPC1768__release_ -IC:\Users\aproi\AppData\
+Local\Arm\Packs\ARM\CMSIS\6.2.0\CMSIS\Core\Include -IC:\Users\aproi\AppData\Loc
+al\Arm\Packs\Keil\LPC1700_DFP\2.7.2\Device\Include --predefine="__UVISION_VERSI
+ON SETA 543" --predefine="LPC175x_6x SETA 1" --predefine="_RTE_ SETA 1" --list=
+.\listings\asm_functs.lst Source\ASM\ASM_functs.s
 
 
 
@@ -1447,4 +1447,4 @@ Symbol: __aeabi_fdiv
       At line 144 in file Source\ASM\ASM_functs.s
 Comment: __aeabi_fdiv used once
 1 symbol
-387 symbols in table
+386 symbols in table
