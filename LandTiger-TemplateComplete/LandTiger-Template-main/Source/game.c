@@ -299,6 +299,7 @@ void check_lines(void) {
     
     // --- STEP 1: Analisi e Pulizia Standard (La riga corrente viene eliminata) ---
     for (r = Field_ROWS - 1; r >= 0; r--) {
+				music_play_clear_sfx();
         full = 1;
         for (c = 0; c < Field_COLS; c++) {
             if (board[r][c] == T_Black) { full = 0; break; }

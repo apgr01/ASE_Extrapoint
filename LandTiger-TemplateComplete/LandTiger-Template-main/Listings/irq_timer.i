@@ -1880,7 +1880,7 @@ void apply_malus(void);
 
 
 
-// --- CONFIGURAZIONE TEMPO ---
+// --- CONFIGURAZIONE ---
 
 
 
@@ -1897,23 +1897,29 @@ typedef struct {
 
 // --- DURATE ---
 typedef enum note_durations {
-    time_semibiscroma = (unsigned int)(0x17D7840 * 1 * 1.6 / 64.0f + 0.5),
-    time_biscroma = (unsigned int)(0x17D7840 * 1 * 1.6 / 32.0f + 0.5),
-    time_semicroma = (unsigned int)(0x17D7840 * 1 * 1.6 / 16.0f + 0.5),
-    time_croma = (unsigned int)(0x17D7840 * 1 * 1.6 / 8.0f + 0.5),
-    time_semiminima = (unsigned int)(0x17D7840 * 1 * 1.6 / 4.0f + 0.5),
-    time_minima = (unsigned int)(0x17D7840 * 1 * 1.6 / 2.0f + 0.5),
-    time_semibreve = (unsigned int)(0x17D7840 * 1 * 1.6 + 0.5),
+    time_semibiscroma = (unsigned int)(0x17D7840 * 1 * 1.8 / 64.0f + 0.5),
+    time_biscroma = (unsigned int)(0x17D7840 * 1 * 1.8 / 32.0f + 0.5),
+    time_semicroma = (unsigned int)(0x17D7840 * 1 * 1.8 / 16.0f + 0.5),
+    time_croma = (unsigned int)(0x17D7840 * 1 * 1.8 / 8.0f + 0.5),
+    time_semiminima = (unsigned int)(0x17D7840 * 1 * 1.8 / 4.0f + 0.5),
+    time_semiminima_p = (unsigned int)(0x17D7840 * 1 * 1.8 / 4.0f * 1.5f + 0.5),
+    time_minima = (unsigned int)(0x17D7840 * 1 * 1.8 / 2.0f + 0.5),
+    time_semibreve = (unsigned int)(0x17D7840 * 1 * 1.8 + 0.5),
     time_pause = 0
 } NOTE_DURATION;
 
-// --- FREQUENZE (Abbassa Tonalità) ---
-// Ho raddoppiato di nuovo i valori precedenti.
-// Valori più alti = Timer più lento = Suono più grave.
+// --- FREQUENZE (Basse per musica, Alte per effetti) ---
 enum frequencies {
     pause = 0,
-    g4 = 5668, g4s = 5348, a4 = 5052, b4 = 4500,
-    c5 = 4248, d5 = 3780, e5 = 3368, f5 = 3184, g5 = 2836, a5 = 2528
+    // Ottava 3 (Bassi - Musica)
+    e3 = 151686, a3 = 113636, b3 = 101238,
+    // Ottava 4 (Medi - Musica)
+    c4 = 95556, d4 = 85130, e4 = 75842, f4 = 71586, g4 = 63774, g4s = 60196, a4 = 56818, b4 = 50618,
+    // Ottava 5 (Alti - Musica)
+    c5 = 47778, d5 = 42564, e5 = 37920, f5 = 35792, g5 = 31886, a5 = 28408,
+
+    // --- OTTAVA 6 (NUOVA - Solo per Effetti Sonori) ---
+    c6 = 23889, e6 = 18960, g6 = 15943, c7 = 11944
 };
 
 // --- FUNZIONI ---
@@ -1923,7 +1929,9 @@ void music_stop(void);
 void music_pause_resume(int pause_flag);
 void music_player_tick(void);
 
-// Variabile globale per il volume
+// NUOVA FUNZIONE
+void music_play_clear_sfx(void);
+
 extern volatile int currentVolume;
 # 5 "Source/timer/IRQ_timer.c" 2
 // Includiamo l'ADC se vuoi controllare il volume col potenziometro (opzionale)

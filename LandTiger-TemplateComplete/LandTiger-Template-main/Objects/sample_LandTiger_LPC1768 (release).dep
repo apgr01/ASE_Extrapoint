@@ -14,7 +14,7 @@ I (Source\sample.h)(0x695D37D5)
 I (Source\game.h)(0x69651762)
 I (Source\GLCD\GLCD.h)(0x695D3751)
 I (Source\adc\adc.h)(0x69651ABA)
-I (Source\music\music.h)(0x6967755A)
+I (Source\music\music.h)(0x69677D84)
 F (.\Source\functions.c)(0x695D37D5)(-xc -std=c90 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O1 -fno-function-sections -I ./Source/button_EXINT -I ./Source/CMSIS_core -I ./Source/joystick -I ./Source/led -I ./Source/RIT -I ./Source/timer -I ./Source-I./RTE/_LandTiger_LPC1768__release_-IC:/Users/aproi/AppData/Local/Arm/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-IC:/Users/aproi/AppData/Local/Arm/Packs/Keil/LPC1700_DFP/2.7.2/Device/Include-D__UVISION_VERSION="543" -DLPC175x_6x -D_RTE_-o ./objects/functions.o -MMD)
 F (.\Source\functions.h)(0x695D37D5)()
 F (.\Source\sample.h)(0x695D37D5)()
@@ -26,7 +26,7 @@ I (Source\RIT\RIT.h)(0x695D37D5)
 I (Source\timer\timer.h)(0x695D37D5)
 I (Source\functions.h)(0x695D37D5)
 F (.\Source\utils.h)(0x695D37D5)()
-F (.\Source\game.c)(0x6967720B)(-xc -std=c90 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O1 -fno-function-sections -I ./Source/button_EXINT -I ./Source/CMSIS_core -I ./Source/joystick -I ./Source/led -I ./Source/RIT -I ./Source/timer -I ./Source-I./RTE/_LandTiger_LPC1768__release_-IC:/Users/aproi/AppData/Local/Arm/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-IC:/Users/aproi/AppData/Local/Arm/Packs/Keil/LPC1700_DFP/2.7.2/Device/Include-D__UVISION_VERSION="543" -DLPC175x_6x -D_RTE_-o ./objects/game.o -MMD)
+F (.\Source\game.c)(0x69677CF2)(-xc -std=c90 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O1 -fno-function-sections -I ./Source/button_EXINT -I ./Source/CMSIS_core -I ./Source/joystick -I ./Source/led -I ./Source/RIT -I ./Source/timer -I ./Source-I./RTE/_LandTiger_LPC1768__release_-IC:/Users/aproi/AppData/Local/Arm/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-IC:/Users/aproi/AppData/Local/Arm/Packs/Keil/LPC1700_DFP/2.7.2/Device/Include-D__UVISION_VERSION="543" -DLPC175x_6x -D_RTE_-o ./objects/game.o -MMD)
 I (Source\game.h)(0x69651762)
 I (Source\GLCD\GLCD.h)(0x695D3751)
 I (C:\Users\aproi\AppData\Local\Arm\Packs\Keil\LPC1700_DFP\2.7.2\Device\Include\LPC17xx.h)(0x691C94BE)
@@ -98,7 +98,7 @@ I (C:\Users\aproi\AppData\Local\Arm\Packs\Keil\LPC1700_DFP\2.7.2\Device\Include\
 I (Source\timer\timer.h)(0x695D37D5)
 I (Source\timer\..\game.h)(0x69651762)
 I (Source\timer\..\GLCD\GLCD.h)(0x695D3751)
-I (Source\timer\..\music\music.h)(0x6967755A)
+I (Source\timer\..\music\music.h)(0x69677D84)
 I (Source\timer\..\adc\adc.h)(0x69651ABA)
 F (.\Source\timer\lib_timer.c)(0x695D37D5)(-xc -std=c90 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O1 -fno-function-sections -I ./Source/button_EXINT -I ./Source/CMSIS_core -I ./Source/joystick -I ./Source/led -I ./Source/RIT -I ./Source/timer -I ./Source-I./RTE/_LandTiger_LPC1768__release_-IC:/Users/aproi/AppData/Local/Arm/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-IC:/Users/aproi/AppData/Local/Arm/Packs/Keil/LPC1700_DFP/2.7.2/Device/Include-D__UVISION_VERSION="543" -DLPC175x_6x -D_RTE_-o ./objects/lib_timer.o -MMD)
 I (C:\Users\aproi\AppData\Local\Arm\Packs\Keil\LPC1700_DFP\2.7.2\Device\Include\LPC17xx.h)(0x691C94BE)
@@ -138,9 +138,9 @@ I (C:\Users\aproi\AppData\Local\Arm\Packs\Keil\LPC1700_DFP\2.7.2\Device\Include\
 I (Source\CMSIS_core\core_cm3.h)(0x695D37D5)
 I (C:\Users\aproi\AppData\Local\Arm\Packs\Keil\LPC1700_DFP\2.7.2\Device\Include\system_LPC17xx.h)(0x691C94BE)
 I (Source\adc\adc.h)(0x69651ABA)
-F (.\Source\music\music.c)(0x6967756B)(-xc -std=c90 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O1 -fno-function-sections -I ./Source/button_EXINT -I ./Source/CMSIS_core -I ./Source/joystick -I ./Source/led -I ./Source/RIT -I ./Source/timer -I ./Source-I./RTE/_LandTiger_LPC1768__release_-IC:/Users/aproi/AppData/Local/Arm/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-IC:/Users/aproi/AppData/Local/Arm/Packs/Keil/LPC1700_DFP/2.7.2/Device/Include-D__UVISION_VERSION="543" -DLPC175x_6x -D_RTE_-o ./objects/music.o -MMD)
-I (Source\music\music.h)(0x6967755A)
+F (.\Source\music\music.c)(0x69677C9A)(-xc -std=c90 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O1 -fno-function-sections -I ./Source/button_EXINT -I ./Source/CMSIS_core -I ./Source/joystick -I ./Source/led -I ./Source/RIT -I ./Source/timer -I ./Source-I./RTE/_LandTiger_LPC1768__release_-IC:/Users/aproi/AppData/Local/Arm/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-IC:/Users/aproi/AppData/Local/Arm/Packs/Keil/LPC1700_DFP/2.7.2/Device/Include-D__UVISION_VERSION="543" -DLPC175x_6x -D_RTE_-o ./objects/music.o -MMD)
+I (Source\music\music.h)(0x69677D84)
 I (C:\Users\aproi\AppData\Local\Arm\Packs\Keil\LPC1700_DFP\2.7.2\Device\Include\LPC17xx.h)(0x691C94BE)
 I (Source\CMSIS_core\core_cm3.h)(0x695D37D5)
 I (C:\Users\aproi\AppData\Local\Arm\Packs\Keil\LPC1700_DFP\2.7.2\Device\Include\system_LPC17xx.h)(0x691C94BE)
-F (.\Source\music\music.h)(0x6967755A)()
+F (.\Source\music\music.h)(0x69677D84)()

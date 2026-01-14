@@ -1787,7 +1787,7 @@ typedef struct
 } LPC_EMAC_TypeDef;
 # 5 "Source/music\\music.h" 2
 
-// --- CONFIGURAZIONE TEMPO ---
+// --- CONFIGURAZIONE ---
 
 
 
@@ -1804,23 +1804,29 @@ typedef struct {
 
 // --- DURATE ---
 typedef enum note_durations {
-    time_semibiscroma = (unsigned int)(0x17D7840 * 1 * 1.6 / 64.0f + 0.5),
-    time_biscroma = (unsigned int)(0x17D7840 * 1 * 1.6 / 32.0f + 0.5),
-    time_semicroma = (unsigned int)(0x17D7840 * 1 * 1.6 / 16.0f + 0.5),
-    time_croma = (unsigned int)(0x17D7840 * 1 * 1.6 / 8.0f + 0.5),
-    time_semiminima = (unsigned int)(0x17D7840 * 1 * 1.6 / 4.0f + 0.5),
-    time_minima = (unsigned int)(0x17D7840 * 1 * 1.6 / 2.0f + 0.5),
-    time_semibreve = (unsigned int)(0x17D7840 * 1 * 1.6 + 0.5),
+    time_semibiscroma = (unsigned int)(0x17D7840 * 1 * 1.8 / 64.0f + 0.5),
+    time_biscroma = (unsigned int)(0x17D7840 * 1 * 1.8 / 32.0f + 0.5),
+    time_semicroma = (unsigned int)(0x17D7840 * 1 * 1.8 / 16.0f + 0.5),
+    time_croma = (unsigned int)(0x17D7840 * 1 * 1.8 / 8.0f + 0.5),
+    time_semiminima = (unsigned int)(0x17D7840 * 1 * 1.8 / 4.0f + 0.5),
+    time_semiminima_p = (unsigned int)(0x17D7840 * 1 * 1.8 / 4.0f * 1.5f + 0.5),
+    time_minima = (unsigned int)(0x17D7840 * 1 * 1.8 / 2.0f + 0.5),
+    time_semibreve = (unsigned int)(0x17D7840 * 1 * 1.8 + 0.5),
     time_pause = 0
 } NOTE_DURATION;
 
-// --- FREQUENZE (Abbassa Tonalità) ---
-// Ho raddoppiato di nuovo i valori precedenti.
-// Valori più alti = Timer più lento = Suono più grave.
+// --- FREQUENZE (Basse per musica, Alte per effetti) ---
 enum frequencies {
     pause = 0,
-    g4 = 5668, g4s = 5348, a4 = 5052, b4 = 4500,
-    c5 = 4248, d5 = 3780, e5 = 3368, f5 = 3184, g5 = 2836, a5 = 2528
+    // Ottava 3 (Bassi - Musica)
+    e3 = 151686, a3 = 113636, b3 = 101238,
+    // Ottava 4 (Medi - Musica)
+    c4 = 95556, d4 = 85130, e4 = 75842, f4 = 71586, g4 = 63774, g4s = 60196, a4 = 56818, b4 = 50618,
+    // Ottava 5 (Alti - Musica)
+    c5 = 47778, d5 = 42564, e5 = 37920, f5 = 35792, g5 = 31886, a5 = 28408,
+
+    // --- OTTAVA 6 (NUOVA - Solo per Effetti Sonori) ---
+    c6 = 23889, e6 = 18960, g6 = 15943, c7 = 11944
 };
 
 // --- FUNZIONI ---
@@ -1830,62 +1836,48 @@ void music_stop(void);
 void music_pause_resume(int pause_flag);
 void music_player_tick(void);
 
-// Variabile globale per il volume
+// NUOVA FUNZIONE
+void music_play_clear_sfx(void);
+
 extern volatile int currentVolume;
 # 2 "Source/music/music.c" 2
 
 
+// Variabili Stato Player
 static int current_note_index = 0;
 static volatile int is_playing = 0;
 
-// Volume (0 - 1023). Modifica qui se vuoi alzare/abbassare.
-volatile int currentVolume = 150;
+// Variabili Stato Effetto Sonoro
+static volatile int sfx_active = 0; // 1 se stiamo suonando l'effetto
+static int sfx_note_index = 0;
+
+// Volume (0 - 1023)
+volatile int currentVolume = 50;
+
+
+NOTE sfx_clear[] = {
+    {c6, time_biscroma}, // Note velocissime e acute
+    {e6, time_biscroma},
+    {g6, time_biscroma},
+    {c7, time_semicroma},
+    {pause, time_biscroma} // Pausa tecnica finale
+};
+
 
 
 NOTE song_tetris[] = {
-    // ============ PARTE A (Melodia Principale) ============
-
-    // Battuta 1
-    {e5, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {c5, time_croma}, {b4, time_croma},
-    // Battuta 2
+    // === PARTE A (1) ===
+    {e5, time_semiminima_p}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {c5, time_croma}, {b4, time_croma},
     {a4, time_semiminima}, {a4, time_croma}, {c5, time_croma}, {e5, time_semiminima}, {d5, time_croma}, {c5, time_croma},
-    // Battuta 3
-    {b4, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {e5, time_semiminima},
-    // Battuta 4
+    {b4, time_semiminima_p}, {c5, time_croma}, {d5, time_semiminima}, {e5, time_semiminima},
     {c5, time_semiminima}, {a4, time_semiminima}, {a4, time_semiminima}, {pause, time_semiminima},
 
-    // Ripetizione Parte A (Opzionale, ma comune nel gioco)
-    // Battuta 5
-    {e5, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {c5, time_croma}, {b4, time_croma},
-    // Battuta 6
-    {a4, time_semiminima}, {a4, time_croma}, {c5, time_croma}, {e5, time_semiminima}, {d5, time_croma}, {c5, time_croma},
-    // Battuta 7
+    // === PARTE B (1) ===
+    {d5, time_semiminima_p}, {f5, time_croma}, {a5, time_semiminima}, {g5, time_croma}, {f5, time_croma},
+    {e5, time_semiminima_p}, {c5, time_croma}, {e5, time_semiminima}, {d5, time_croma}, {c5, time_croma},
     {b4, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {e5, time_semiminima},
-    // Battuta 8
-    {c5, time_semiminima}, {a4, time_semiminima}, {a4, time_semiminima}, {pause, time_semiminima},
-
-    // ============ PARTE B (Ponte Alto) ============
-
-    // Battuta 9
-    {d5, time_minima}, {f5, time_croma}, {a5, time_semiminima}, {g5, time_croma}, {f5, time_croma},
-    // Battuta 10
-    {e5, time_semiminima}, {e5, time_croma}, {c5, time_croma}, {e5, time_semiminima}, {d5, time_croma}, {c5, time_croma},
-    // Battuta 11
-    {b4, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {e5, time_semiminima},
-    // Battuta 12
-    {c5, time_semiminima}, {a4, time_semiminima}, {a4, time_semiminima}, {pause, time_semiminima},
-
-    // Ripetizione Parte B
-    // Battuta 13
-    {d5, time_minima}, {f5, time_croma}, {a5, time_semiminima}, {g5, time_croma}, {f5, time_croma},
-    // Battuta 14
-    {e5, time_semiminima}, {e5, time_croma}, {c5, time_croma}, {e5, time_semiminima}, {d5, time_croma}, {c5, time_croma},
-    // Battuta 15
-    {b4, time_semiminima}, {b4, time_croma}, {c5, time_croma}, {d5, time_semiminima}, {e5, time_semiminima},
-    // Battuta 16 (Finale Loop)
     {c5, time_semiminima}, {a4, time_semiminima}, {a4, time_semiminima}, {pause, time_semiminima}
 };
-
 
 
 
@@ -1903,16 +1895,17 @@ void playNote(NOTE note) {
 }
 
 void music_init(void) {
-    // Configura P0.26 come AOUT (DAC)
     ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL1 &= ~(3 << 20);
     ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL1 |= (2 << 20);
     current_note_index = 0;
     is_playing = 0;
+    sfx_active = 0;
 }
 
 void music_start(void) {
     current_note_index = 0;
     is_playing = 1;
+    sfx_active = 0; // Reset effetti
     __NVIC_EnableIRQ(TIMER1_IRQn);
     __NVIC_EnableIRQ(TIMER2_IRQn);
     playNote(song_tetris[0]);
@@ -1931,16 +1924,45 @@ void music_pause_resume(int pause_flag) {
     } else {
         if (is_playing) {
             ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->TCR |= 1;
-            if (song_tetris[current_note_index].freq != pause) {
-                ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->TCR |= 1;
+            // Se stiamo riprendendo, controlliamo se eravamo in un effetto o musica
+            if (sfx_active) {
+                if (sfx_clear[sfx_note_index].freq != pause) ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->TCR |= 1;
+            } else {
+                if (song_tetris[current_note_index].freq != pause) ((LPC_TIM_TypeDef *) ((0x40080000UL) + 0x10000) )->TCR |= 1;
             }
         }
     }
 }
 
+
+void music_play_clear_sfx(void) {
+    if (!is_playing) return; // Se muto, niente effetto
+
+    sfx_active = 1; // Attiva modalità effetto
+    sfx_note_index = 0; // Reset indice effetto
+    playNote(sfx_clear[0]); // Suona subito la prima nota
+}
+
+
 void music_player_tick(void) {
     if (!is_playing) return;
-    current_note_index++;
-    if (current_note_index >= (sizeof(song_tetris) / sizeof(NOTE))) current_note_index = 0;
-    playNote(song_tetris[current_note_index]);
+
+    if (sfx_active) {
+        // --- MODALITÀ EFFETTO ---
+        sfx_note_index++;
+        if (sfx_note_index >= (sizeof(sfx_clear) / sizeof(NOTE))) {
+            // Effetto finito!
+            sfx_active = 0;
+            // Riprendi la musica da dove eravamo
+            playNote(song_tetris[current_note_index]);
+        } else {
+            // Prossima nota effetto
+            playNote(sfx_clear[sfx_note_index]);
+        }
+    } else {
+        // --- MODALITÀ NORMALE (Musica) ---
+        current_note_index++;
+        if (current_note_index >= (sizeof(song_tetris) / sizeof(NOTE))) current_note_index = 0;
+        playNote(song_tetris[current_note_index]);
+    }
 }
